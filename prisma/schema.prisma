@@ -1,0 +1,238 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ActivityType {
+  CREATE_STORY
+  UPDATE_STORY
+  DELETE_STORY
+  LIKE_DESTINATION
+  LIKE_TRADITION
+  LIKE_STORY
+  SAVE_DESTINATION
+  SAVE_TRADITION
+  SAVE_STORY
+  CREATE_COMMENT
+  REPLY_COMMENT
+  UPDATE_PROFILE
+  CREATE_CATEGORY
+  UPDATE_CATEGORY
+  CREATE_TAG
+  UPDATE_TAG
+}
+
+model Category {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+
+  destinations Destination[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  destinations Destination[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id             String  @id @default(cuid())
+  email          String  @unique
+  name           String?
+  password       String?
+  bio            String?
+  refreshToken   String?
+  role           Role    @default(USER)
+  profileImageId String?
+  profileImage   Image?  @relation(fields: [profileImageId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stories      Story[]
+  likes        Like[]
+  bookmarks    Bookmark[]
+  comments     Comment[]
+  activityLogs ActivityLog[]
+}
+
+model Destination {
+  id        String  @id @default(cuid())
+  title     String
+  slug      String  @unique
+  content   String?
+  address   String?
+  latitude  Float?
+  longitude Float?
+  coverId   String?
+  cover     Image?  @relation(fields: [coverId], references: [id], onDelete: Cascade)
+
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tags      Tag[]
+  galleries Gallery[]
+  likes     Like[]
+  bookmarks Bookmark[]
+  comments  Comment[]
+}
+
+model Tradition {
+  id       String  @id @default(cuid())
+  title    String
+  slug     String  @unique
+  content  String
+  imageUrl String
+  coverId  String?
+  cover    Image?  @relation(fields: [coverId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  likes     Like[]
+  galleries Gallery[]
+  bookmarks Bookmark[]
+  comments  Comment[]
+}
+
+model Story {
+  id          String  @id @default(cuid())
+  title       String
+  slug        String  @unique
+  content     String
+  imageUrl    String?
+  isPublished Boolean @default(false)
+  coverId     String?
+  cover       Image?  @relation(fields: [coverId], references: [id], onDelete: Cascade)
+
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  likes     Like[]
+  bookmarks Bookmark[]
+  comments  Comment[]
+}
+
+model Like {
+  id            String  @id @default(cuid())
+  userId        String
+  destinationId String?
+  traditionId   String?
+  storyId       String?
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destination Destination? @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  tradition   Tradition?   @relation(fields: [traditionId], references: [id], onDelete: Cascade)
+  story       Story?       @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, destinationId])
+  @@unique([userId, traditionId])
+  @@unique([userId, storyId])
+}
+
+model Bookmark {
+  id            String  @id @default(cuid())
+  userId        String
+  destinationId String?
+  traditionId   String?
+  storyId       String?
+
+  destination Destination? @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tradition   Tradition?   @relation(fields: [traditionId], references: [id], onDelete: Cascade)
+  story       Story?       @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, destinationId])
+  @@unique([userId, traditionId])
+  @@unique([userId, storyId])
+}
+
+model Comment {
+  id            String  @id @default(cuid())
+  content       String
+  authorId      String
+  destinationId String?
+  traditionId   String?
+  storyId       String?
+  parentId      String?
+
+  author      User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  destination Destination? @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  tradition   Tradition?   @relation(fields: [traditionId], references: [id], onDelete: Cascade)
+  story       Story?       @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  parent      Comment?     @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     Comment[]    @relation("CommentReplies")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ActivityLog {
+  id       String       @id @default(cuid())
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  action   ActivityType
+  details  Json?
+  targetId String?
+
+  createdAt DateTime @default(now())
+}
+
+model Gallery {
+  id String @id @default(cuid())
+
+  imageId       String?
+  traditionId   String?
+  destinationId String?
+
+  tradition   Tradition?   @relation(fields: [traditionId], references: [id], onDelete: Cascade)
+  destination Destination? @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  image       Image?       @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Image {
+  id        String  @id @default(cuid())
+  url       String?
+  public_id String?
+
+  Story       Story[]
+  Tradition   Tradition[]
+  Destination Destination[]
+  User        User[]
+  Gallery     Gallery[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
