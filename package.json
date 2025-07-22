@@ -7,7 +7,7 @@
     "dev": "nodemon ./src/server.ts",
     "build": "tsc",
     "serve": "node dist/index.js",
-    "test": "jest --coverage"
+    "start": "nodemon ./src/server.ts"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.152",
