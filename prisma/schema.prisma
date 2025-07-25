@@ -56,7 +56,8 @@ model Tag {
 
 model User {
   id             String  @id @default(cuid())
-  email          String  @unique
+  email          String? @unique
+  username       String  @unique
   name           String?
   password       String?
   bio            String?
@@ -223,15 +224,15 @@ model Gallery {
 }
 
 model Image {
-  id        String  @id @default(cuid())
-  url       String?
-  public_id String?
+  id       String  @id @default(cuid())
+  url      String?
+  publicId String?
 
-  Story       Story[]
-  Tradition   Tradition[]
-  Destination Destination[]
-  User        User[]
-  Gallery     Gallery[]
+  story       Story[]
+  tradition   Tradition[]
+  destination Destination[]
+  user        User[]
+  gallery     Gallery[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

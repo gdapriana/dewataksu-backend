@@ -1,0 +1,28 @@
+### REGISTER
+POST http://localhost:5050/api/register
+Content-Type: application/json
+
+{
+    "username": "gedeapriana",
+    "password": "11111111"
+}
+
+### LOGIN
+POST http://localhost:5050/api/login
+Content-Type: application/json
+
+{
+    "username": "gedeapriana",
+    "password": "11111111"
+}
+
+### LOGOUT
+DELETE http://localhost:5050/api/logout
+
+### ME
+GET http://localhost:5050/api/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZGoycHgzYzAwMDBpMG4xaDNsbWFxNXoiLCJ1c2VybmFtZSI6ImdlZGVhcHJpYW5hIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NTM0NjQ3MzYsImV4cCI6MTc1MzQ2NDc5Nn0.5udVFk7O5FP9j65KW5rfSLJzTGYSEnnQOAFtMBuejZQ
+Content-Type: application/json
+
+### REFRESH TOKEN
+GET http://localhost:5050/api/token
