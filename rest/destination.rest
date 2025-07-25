@@ -1,0 +1,2 @@
+### GET
+GET http://localhost:5050/api/destinations/res
