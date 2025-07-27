@@ -75,3 +75,10 @@ export const GET = {
     },
   },
 };
+
+export const GETS = {
+  cover: { select: { url: true } },
+  category: { select: { name: true, slug: true } },
+  tags: { select: { name: true, slug: true } },
+  _count: { select: { likes: true, bookmarks: true } },
+};

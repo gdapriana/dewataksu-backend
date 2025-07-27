@@ -1,2 +1,5 @@
 ### GET
-GET http://localhost:5050/api/destinations/res
+GET http://localhost:5050/api/destinations/pantai-lebih
+
+### GETS
+GET http://localhost:5050/api/destinations?hello

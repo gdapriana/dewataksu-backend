@@ -1,3 +1,4 @@
+import z from "zod";
 import db from "../database/db";
 import { ErrorResponseMessage, ResponseError } from "../utils/error-response";
 import {
@@ -16,11 +17,9 @@ import Validation from "../validation/validation";
 import bcrypt from "bcrypt";
 
 class UserService {
-  static async REGISTER(body: RegisterRequest) {
-    const validatedBody: RegisterRequest = Validation.validate(
-      UserValidation.REGISTER,
-      body,
-    );
+  static async REGISTER(body: z.infer<typeof UserValidation.REGISTER>) {
+    const validatedBody: z.infer<typeof UserValidation.REGISTER> =
+      Validation.validate(UserValidation.REGISTER, body);
     const userCheck = await db.user.findUnique({
       where: { username: validatedBody.username },
       select: { username: true },
@@ -42,11 +41,9 @@ class UserService {
     return user;
   }
 
-  static async LOGIN(body: LoginRequest) {
-    const validatedBody: LoginRequest = Validation.validate(
-      UserValidation.LOGIN,
-      body,
-    );
+  static async LOGIN(body: z.infer<typeof UserValidation.LOGIN>) {
+    const validatedBody: z.infer<typeof UserValidation.LOGIN> =
+      Validation.validate(UserValidation.LOGIN, body);
     const userCheck = await db.user.findUnique({
       where: { username: validatedBody.username },
       select: { username: true, password: true, id: true, role: true },

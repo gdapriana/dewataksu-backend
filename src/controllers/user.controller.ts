@@ -1,11 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { LoginRequest, RegisterRequest, UserRequest } from "../utils/types";
 import UserService from "../services/user.service";
+import z from "zod";
+import UserValidation from "../validation/user.validation";
 
 class UserController {
   static async REGISTER(req: Request, res: Response, next: NextFunction) {
     try {
-      const body: RegisterRequest = req.body;
+      const body: z.infer<typeof UserValidation.REGISTER> = req.body;
       const data = await UserService.REGISTER(body);
       res.status(200).json({ data });
     } catch (e) {
@@ -15,7 +17,7 @@ class UserController {
   }
   static async LOGIN(req: Request, res: Response, next: NextFunction) {
     try {
-      const body: LoginRequest = req.body;
+      const body: z.infer<typeof UserValidation.LOGIN> = req.body;
       const { accessToken, refreshToken } = await UserService.LOGIN(body);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,

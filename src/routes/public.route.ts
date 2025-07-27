@@ -12,5 +12,6 @@ publicRoute.delete("/api/logout", UserController.LOGOUT);
 
 // DESTINATION
 publicRoute.get("/api/destinations/:slug", DestinationController.GET);
+publicRoute.get("/api/destinations", DestinationController.GETS);
 
 export default publicRoute;

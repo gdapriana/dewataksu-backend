@@ -82,8 +82,10 @@ model Destination {
   slug      String  @unique
   content   String?
   address   String?
+  mapUrl    String?
   latitude  Float?
   longitude Float?
+  price     Int?    @default(0)
   coverId   String?
   cover     Image?  @relation(fields: [coverId], references: [id], onDelete: Cascade)
 
