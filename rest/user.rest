@@ -12,7 +12,7 @@ POST http://localhost:5050/api/login
 Content-Type: application/json
 
 {
-    "username": "gedeapriana",
+    "username": "admin",
     "password": "11111111"
 }
 

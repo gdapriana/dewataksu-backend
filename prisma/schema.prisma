@@ -16,6 +16,9 @@ enum ActivityType {
   CREATE_STORY
   UPDATE_STORY
   DELETE_STORY
+  CREATE_DESTINATION
+  UPDATE_DESTINATION
+  DELETE_DESTINATION
   LIKE_DESTINATION
   LIKE_TRADITION
   LIKE_STORY
@@ -126,12 +129,12 @@ model Story {
   slug        String  @unique
   content     String
   imageUrl    String?
-  isPublished Boolean @default(false)
+  isPublished Boolean @default(true)
   coverId     String?
+  authorId    String
   cover       Image?  @relation(fields: [coverId], references: [id], onDelete: Cascade)
 
-  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId String
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -203,6 +206,7 @@ model ActivityLog {
   id       String       @id @default(cuid())
   user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   String
+  from     Role?        @default(USER)
   action   ActivityType
   details  Json?
   targetId String?

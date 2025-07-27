@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 const dummyDestinations = [
@@ -27,11 +28,20 @@ const dummyDestinations = [
 async function main() {
   console.log("🌱 Start seeding...");
   console.log("🗑️ Deleting existing data...");
+  await prisma.user.deleteMany();
   await prisma.destination.deleteMany();
   await prisma.tag.deleteMany();
   await prisma.category.deleteMany();
-  console.log("📚 Seeding categories...");
 
+  console.log("seeding users...");
+  await prisma.user.createMany({
+    data: [
+      { username: "admin", password: await bcrypt.hash("11111111", 10), role: "ADMIN" },
+      { username: "user", password: await bcrypt.hash("11111111", 10), role: "USER" },
+    ],
+  });
+
+  console.log("📚 Seeding categories...");
   const createdCategories = await prisma.category.createManyAndReturn({
     data: [
       { name: "Beach", slug: "beach" },

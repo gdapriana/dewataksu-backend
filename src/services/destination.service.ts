@@ -5,6 +5,9 @@ import { GET, GETS } from "../utils/relation/destination";
 import DestinationValidation from "../validation/destination.validation";
 import Validation from "../validation/validation";
 import { Prisma } from "@prisma/client";
+import slugify from "../utils/slugify";
+import { UserPayload } from "../utils/types";
+import activityLog from "../utils/activity-log";
 
 class DestinationService {
   static async GET(slug: string) {
@@ -54,6 +57,57 @@ class DestinationService {
         nextCursor,
       },
     };
+  }
+  static async POST(body: z.infer<typeof DestinationValidation.POST>, admin: UserPayload) {
+    const validatedBody: z.infer<typeof DestinationValidation.POST> = Validation.validate(DestinationValidation.POST, body);
+    const { tags, categoryId, ...destinationData } = validatedBody;
+    const slug = slugify(validatedBody.title);
+    const checkDestination = await db.destination.findUnique({
+      where: { slug },
+      select: { slug: true },
+    });
+    if (checkDestination) throw new ResponseError(ErrorResponseMessage.ALREADY_EXISTS("destination"));
+    const checkCategory = await db.category.findUnique({
+      where: {
+        id: categoryId,
+      },
+    });
+    if (!checkCategory) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("category"));
+    const createData: Prisma.DestinationCreateInput = {
+      ...destinationData,
+      slug,
+      category: {
+        connect: { id: validatedBody.categoryId },
+      },
+    };
+
+    if (tags && tags.length > 0) {
+      createData.tags = {
+        connectOrCreate: tags.map((tagName) => {
+          const slug = slugify(tagName);
+          return {
+            where: { slug: slug },
+            create: { name: tagName, slug: slug },
+          };
+        }),
+      };
+    }
+    const newDestination = await db.destination.create({
+      data: createData,
+      include: {
+        category: true,
+        tags: true,
+      },
+    });
+    await db.activityLog.create({
+      data: {
+        action: "CREATE_DESTINATION",
+        from: admin.role,
+        userId: admin.id,
+        details: activityLog("destination", newDestination.slug),
+      },
+    });
+    return newDestination;
   }
 }
 

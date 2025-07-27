@@ -2,4 +2,16 @@
 GET http://localhost:5050/api/destinations/pantai-lebih
 
 ### GETS
-GET http://localhost:5050/api/destinations?hello
+GET http://localhost:5050/api/destinations
+
+
+### POST
+POST http://localhost:5050/api/destinations
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZGxub2podzAwMDBpMGtxbTNuNDhwM2kiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzNjE5ODIyLCJleHAiOjE3NTM3MDYyMjJ9.b0dDPE4KS3OI2CQGwLrWF-yFgji1SUivmpdkGZ-gwk8
+
+{
+    "title": "test destination 4",
+    "categoryId": "cmdlnojmx0003i0kq5kz83jkz",
+    "tags": ["beach", "mountain", "popular"]
+}

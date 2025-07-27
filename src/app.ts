@@ -5,6 +5,7 @@ import errorMiddleware from "../src/middleware/error.middleware";
 import publicRoute from "./routes/public.route";
 import { ResponseError } from "./utils/error-response";
 import userRoute from "./routes/user.route";
+import adminRoute from "./routes/admin.route";
 
 const app: Application = express();
 app.use(express.json());
@@ -22,6 +23,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use(publicRoute);
 app.use(userRoute);
+app.use(adminRoute);
 
 app.use((req, res, next) => {
   const error = new ResponseError({

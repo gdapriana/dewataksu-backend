@@ -4,21 +4,27 @@ class DestinationValidation {
   static readonly QUERY = z.object({
     title: z.string().optional(),
     address: z.string().optional(),
-    category: z.string().optional().describe("Filter berdasarkan categoryId"),
+    category: z.string().optional().describe("Filter berdasarkan category slug"),
     tags: z.string().optional(),
     minPrice: z.coerce.number().int().min(0).optional(),
     maxPrice: z.coerce.number().int().min(0).optional(),
     page: z.coerce.number().int().min(1).optional().default(1),
     size: z.coerce.number().int().min(1).max(100).optional().default(10),
-    cursor: z
-      .string()
-      .optional()
-      .describe("ID dari item terakhir di halaman sebelumnya"),
-    sortBy: z
-      .enum(["price", "createdAt", "updatedAt"])
-      .optional()
-      .default("createdAt"),
+    cursor: z.string().optional().describe("ID dari item terakhir di halaman sebelumnya"),
+    sortBy: z.enum(["price", "createdAt", "updatedAt"]).optional().default("createdAt"),
     orderBy: z.enum(["asc", "desc"]).optional().default("desc"),
+  });
+
+  static readonly POST = z.object({
+    title: z.string().min(1).max(200),
+    content: z.string().optional().nullable(),
+    address: z.string().optional().nullable(),
+    mapUrl: z.string().url().optional().nullable(),
+    latitude: z.number().optional().nullable(),
+    longitude: z.number().optional().nullable(),
+    categoryId: z.string().cuid({ message: "invalid category id" }),
+    price: z.number().optional().nullable(),
+    tags: z.array(z.string().min(1)).optional(),
   });
 }
 
