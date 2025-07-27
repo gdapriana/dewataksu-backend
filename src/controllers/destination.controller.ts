@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import DestinationService from "../services/destination.service";
-import DestinationValidation from "../validation/destination.validation";
+import { DestinationCommentService, DestinationService } from "../services/destination.service";
+import { DestinationCommentValidation, DestinationValidation } from "../validation/destination.validation";
 import z from "zod";
 import { UserRequest } from "../utils/types";
 
-class DestinationController {
+export class DestinationController {
   static async GET(req: Request, res: Response, next: NextFunction) {
     try {
       const { slug } = req.params;
@@ -33,6 +33,33 @@ class DestinationController {
       next(e);
     }
   }
+
+  static async PATCH(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const body: z.infer<typeof DestinationValidation.PATCH> = req.body;
+      const result = await DestinationService.PATCH(id, body, req.user!);
+      res.status(200).json({ result });
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
-export default DestinationController;
+export class DestinationCommentController {
+  static async POST(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const body: z.infer<typeof DestinationCommentValidation.POST> = req.body;
+      const result = await DestinationCommentService.POST(id, body, req.user!);
+      res.status(200).json({ result });
+    } catch (e) {
+      next(e);
+    }
+  }
+  static async DELETE(req: UserRequest, res: Response, next: NextFunction) {
+    const { id } = req.params;
+    const result = await DestinationCommentService.DELETE(id, req.user!);
+    res.status(200).json({ result });
+  }
+}

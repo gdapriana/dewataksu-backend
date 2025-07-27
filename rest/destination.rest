@@ -8,10 +8,33 @@ GET http://localhost:5050/api/destinations
 ### POST
 POST http://localhost:5050/api/destinations
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZGxub2podzAwMDBpMGtxbTNuNDhwM2kiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzNjE5ODIyLCJleHAiOjE3NTM3MDYyMjJ9.b0dDPE4KS3OI2CQGwLrWF-yFgji1SUivmpdkGZ-gwk8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZGxub2podzAwMDFpMGtxNGRnZm1qZ20iLCJ1c2VybmFtZSI6InVzZXIiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1MzYyMDIzOSwiZXhwIjoxNzUzNzA2NjM5fQ.YablUXlaKsLdszkUD1-Ix2ABr-Cu8JSOy4tHvgH5UAQ
 
 {
-    "title": "test destination 4",
+    "title": "test destination 5",
     "categoryId": "cmdlnojmx0003i0kq5kz83jkz",
     "tags": ["beach", "mountain", "popular"]
+}
+
+### PATCH
+PATCH http://localhost:5050/api/destinations/cmdlnojvz000ci0kql2ojjyho
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZGxub2podzAwMDBpMGtxbTNuNDhwM2kiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzNjIyMzYzLCJleHAiOjE3NTM3MDg3NjN9.RQvpqUyIetId6fAPw8ZpG0OJ75p0-aJVTCZex4xI7P4
+
+{
+    "title": "Kuta Beach 2",
+    "categoryId": "cmdlnojmx0004i0kqqse64m2s",
+    "tags": ["lolok", "pepek"]
+}
+
+######## COMMENT
+
+### POST
+POST  http://localhost:5050/api/destinations/cmdlnojvz000ci0kql2ojjyho/comment
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZGxub2podzAwMDFpMGtxNGRnZm1qZ20iLCJ1c2VybmFtZSI6InVzZXIiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1MzYzNzAxNCwiZXhwIjoxNzUzNzIzNDE0fQ.QESqC0HaNR95n49x2MBRKMFzvUjMLmZyZDLoZDl0umI
+
+{
+    "content": "test comment repply",
+    "parentId": "cmdly9kxk0001i0v0yy8fru0m"
 }

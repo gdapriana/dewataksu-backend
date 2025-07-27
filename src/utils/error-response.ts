@@ -1,16 +1,6 @@
 import { ErrorResponse } from "../utils/types";
 
-type Schema =
-  | "user"
-  | "activity"
-  | "category"
-  | "tag"
-  | "user"
-  | "destination"
-  | "tradition"
-  | "story"
-  | "comment"
-  | "bookmark";
+type Schema = "user" | "activity" | "category" | "tag" | "user" | "destination" | "tradition" | "story" | "comment" | "bookmark" | "comment";
 
 export class ErrorResponseMessage {
   static INVALID_USERNAME_PASSWORD(): ErrorResponse {
@@ -26,9 +16,7 @@ export class ErrorResponseMessage {
     };
   }
 
-  static UNAUTHORIZED(
-    message: string = "authentication failed, please login.",
-  ): ErrorResponse {
+  static UNAUTHORIZED(message: string = "authentication failed, please login."): ErrorResponse {
     return {
       status: 401,
       message,

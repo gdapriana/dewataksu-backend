@@ -1,6 +1,6 @@
 import z from "zod";
 
-class DestinationValidation {
+export class DestinationValidation {
   static readonly QUERY = z.object({
     title: z.string().optional(),
     address: z.string().optional(),
@@ -26,6 +26,23 @@ class DestinationValidation {
     price: z.number().optional().nullable(),
     tags: z.array(z.string().min(1)).optional(),
   });
+
+  static readonly PATCH = z.object({
+    title: z.string().min(1).max(200).optional(),
+    content: z.string().optional().nullable(),
+    address: z.string().optional().nullable(),
+    mapUrl: z.string().url().optional().nullable(),
+    latitude: z.number().optional().nullable(),
+    longitude: z.number().optional().nullable(),
+    categoryId: z.string().cuid({ message: "invalid category id" }).optional(),
+    price: z.number().optional().nullable(),
+    tags: z.array(z.string().min(1)).optional(),
+  });
 }
 
-export default DestinationValidation;
+export class DestinationCommentValidation {
+  static readonly POST = z.object({
+    content: z.string().min(3).max(300),
+    parentId: z.string().cuid().optional(),
+  });
+}

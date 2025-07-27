@@ -1,6 +1,6 @@
 import express from "express";
 import UserController from "../controllers/user.controller";
-import DestinationController from "../controllers/destination.controller";
+import { DestinationController } from "../controllers/destination.controller";
 
 const publicRoute = express.Router();
 

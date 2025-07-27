@@ -2,14 +2,14 @@ import z from "zod";
 import db from "../database/db";
 import { ErrorResponseMessage, ResponseError } from "../utils/error-response";
 import { GET, GETS } from "../utils/relation/destination";
-import DestinationValidation from "../validation/destination.validation";
+import { DestinationCommentValidation, DestinationValidation } from "../validation/destination.validation";
 import Validation from "../validation/validation";
 import { Prisma } from "@prisma/client";
 import slugify from "../utils/slugify";
 import { UserPayload } from "../utils/types";
 import activityLog from "../utils/activity-log";
 
-class DestinationService {
+export class DestinationService {
   static async GET(slug: string) {
     const destinationCheck = await db.destination.findUnique({
       where: { slug },
@@ -109,6 +109,131 @@ class DestinationService {
     });
     return newDestination;
   }
+  static async PATCH(id: string, body: z.infer<typeof DestinationValidation.PATCH>, admin: UserPayload) {
+    const validatedBody: z.infer<typeof DestinationValidation.PATCH> = Validation.validate(DestinationValidation.PATCH, body);
+    const { tags, ...destinationData } = validatedBody;
+
+    const updatedDestination = await db.$transaction(async (tx) => {
+      let newSlug = undefined;
+      const checkDestination = await tx.destination.findUnique({ where: { id } });
+      if (!checkDestination) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
+      if (destinationData.categoryId) {
+        const checkCategory = await db.category.findUnique({ where: { id: destinationData.categoryId } });
+        if (!checkCategory) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("category"));
+      }
+      if (destinationData.title) {
+        newSlug = slugify(destinationData.title);
+        const checkSlug = await db.destination.findUnique({
+          where: { slug: newSlug },
+          select: { slug: true },
+        });
+        if (checkSlug) throw new ResponseError(ErrorResponseMessage.ALREADY_EXISTS("destination"));
+      }
+      if (tags) {
+        const tagIds = await Promise.all(
+          tags.map(async (tagName) => {
+            const slug = slugify(tagName);
+            const tag = await tx.tag.upsert({
+              where: { slug },
+              update: {},
+              create: { name: tagName, slug },
+            });
+            return tag.id;
+          }),
+        );
+        return tx.destination.update({
+          where: { id },
+          data: {
+            ...destinationData,
+            tags: {
+              set: tagIds.map((id) => ({ id })),
+            },
+          },
+          include: { category: true, tags: true }, // Sertakan relasi di response
+        });
+      } else {
+        return tx.destination.update({
+          where: { id: id },
+          data: {
+            ...destinationData,
+          },
+          include: { category: true, tags: true },
+        });
+      }
+    });
+    await db.activityLog.create({
+      data: {
+        action: "UPDATE_DESTINATION",
+        from: admin.role,
+        userId: admin.id,
+        details: activityLog("destination", updatedDestination.slug),
+      },
+    });
+    return updatedDestination;
+  }
+  static async DELETE(id: string, admin: UserPayload) {
+    const checkDestianation = await db.destination.findUnique({ where: { id }, select: { id: true } });
+    if (!checkDestianation) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
+    const deletedDestination = await db.destination.delete({ where: { id }, select: { id: true, slug: true } });
+    await db.activityLog.create({
+      data: {
+        action: "DELETE_DESTINATION",
+        from: admin.role,
+        userId: admin.id,
+        details: activityLog("destination", deletedDestination.slug),
+      },
+    });
+    return deletedDestination;
+  }
 }
 
-export default DestinationService;
+export class DestinationCommentService {
+  static async POST(id: string, body: z.infer<typeof DestinationCommentValidation.POST>, user: UserPayload) {
+    const validatedBody: z.infer<typeof DestinationCommentValidation.POST> = Validation.validate(DestinationCommentValidation.POST, body);
+    const checkDestination = await db.destination.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+      },
+    });
+    if (!checkDestination) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
+    if (validatedBody.parentId) {
+      const checkComment = await db.comment.findUnique({ where: { id: validatedBody.parentId } });
+      if (!checkComment) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("comment"));
+    }
+    const comment = await db.comment.create({
+      data: {
+        ...validatedBody,
+        authorId: user.id,
+        destinationId: id,
+      },
+      select: {
+        id: true,
+      },
+    });
+    await db.activityLog.create({
+      data: {
+        action: validatedBody.parentId ? "REPLY_COMMENT" : "CREATE_COMMENT",
+        from: user.role,
+        userId: user.id,
+        details: activityLog("comment", checkDestination.title),
+      },
+    });
+    return comment;
+  }
+  static async DELETE(id: string, user: UserPayload) {
+    const checkComment = await db.comment.findUnique({ where: { id }, select: { destination: { select: { title: true } } } });
+    if (!checkComment) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("comment"));
+    const deletedComment = await db.comment.delete({ where: { id }, select: { id: true } });
+    await db.activityLog.create({
+      data: {
+        action: "DELETE_COMMENT",
+        from: user.role,
+        userId: user.id,
+        details: activityLog("comment", checkComment.destination?.title),
+      },
+    });
+    return deletedComment;
+  }
+}
