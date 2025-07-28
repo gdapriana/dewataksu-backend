@@ -45,12 +45,6 @@ class CloudinaryController {
       next(err);
     }
   }
-  static async bulkDelete(req: Request, res: Response, next: NextFunction) {
-    try {
-    } catch (e) {
-      next(e);
-    }
-  }
 }
 
 export default CloudinaryController;

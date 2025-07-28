@@ -7,6 +7,11 @@ const userRoute = express.Router();
 userRoute.use(verifyMiddleware);
 userRoute.get("/api/me", UserController.ME);
 
-// destination comment
+// DESTINATION | COMMENT
 userRoute.post("/api/destinations/:id/comment", DestinationCommentController.POST);
+userRoute.delete("/api/comments/:id", DestinationCommentController.DELETE);
+
+// DESTINATION | LIKE
+// DESTINATION | SAVE
+
 export default userRoute;

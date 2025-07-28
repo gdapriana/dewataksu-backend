@@ -8,6 +8,7 @@ import { Prisma } from "@prisma/client";
 import slugify from "../utils/slugify";
 import { UserPayload } from "../utils/types";
 import activityLog from "../utils/activity-log";
+import { cloudinary } from "../utils/cloudinary";
 
 export class DestinationService {
   static async GET(slug: string) {
@@ -60,7 +61,7 @@ export class DestinationService {
   }
   static async POST(body: z.infer<typeof DestinationValidation.POST>, admin: UserPayload) {
     const validatedBody: z.infer<typeof DestinationValidation.POST> = Validation.validate(DestinationValidation.POST, body);
-    const { tags, categoryId, ...destinationData } = validatedBody;
+    const { tags, categoryId, cover, ...destinationData } = validatedBody;
     const slug = slugify(validatedBody.title);
     const checkDestination = await db.destination.findUnique({
       where: { slug },
@@ -76,11 +77,16 @@ export class DestinationService {
     const createData: Prisma.DestinationCreateInput = {
       ...destinationData,
       slug,
+      cover: {
+        create: {
+          url: cover?.url,
+          publicId: cover?.publicId,
+        },
+      },
       category: {
         connect: { id: validatedBody.categoryId },
       },
     };
-
     if (tags && tags.length > 0) {
       createData.tags = {
         connectOrCreate: tags.map((tagName) => {
@@ -93,17 +99,18 @@ export class DestinationService {
       };
     }
     const newDestination = await db.destination.create({
-      data: createData,
+      data: { ...createData },
       include: {
         category: true,
         tags: true,
       },
     });
+
     await db.activityLog.create({
       data: {
         action: "CREATE_DESTINATION",
         from: admin.role,
-        userId: admin.id,
+        username: admin.username,
         details: activityLog("destination", newDestination.slug),
       },
     });
@@ -111,12 +118,12 @@ export class DestinationService {
   }
   static async PATCH(id: string, body: z.infer<typeof DestinationValidation.PATCH>, admin: UserPayload) {
     const validatedBody: z.infer<typeof DestinationValidation.PATCH> = Validation.validate(DestinationValidation.PATCH, body);
-    const { tags, ...destinationData } = validatedBody;
+    const { tags, cover, ...destinationData } = validatedBody;
+    const checkDestination = await db.destination.findUnique({ where: { id } });
+    if (!checkDestination) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
 
     const updatedDestination = await db.$transaction(async (tx) => {
       let newSlug = undefined;
-      const checkDestination = await tx.destination.findUnique({ where: { id } });
-      if (!checkDestination) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
       if (destinationData.categoryId) {
         const checkCategory = await db.category.findUnique({ where: { id: destinationData.categoryId } });
         if (!checkCategory) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("category"));
@@ -129,6 +136,16 @@ export class DestinationService {
         });
         if (checkSlug) throw new ResponseError(ErrorResponseMessage.ALREADY_EXISTS("destination"));
       }
+
+      let newCoverId = undefined;
+      if ((cover !== null || cover !== undefined) && checkDestination.coverId === null) {
+        newCoverId = (await tx.image.create({ data: { url: cover?.url, publicId: cover?.publicId }, select: { id: true } })).id;
+      }
+      if ((cover !== null || cover !== undefined) && checkDestination.coverId) await tx.image.update({ where: { id: checkDestination.coverId }, data: { url: cover?.url, publicId: cover?.publicId } });
+      if (cover === null && checkDestination.coverId) {
+        newCoverId = null;
+      }
+
       if (tags) {
         const tagIds = await Promise.all(
           tags.map(async (tagName) => {
@@ -145,41 +162,53 @@ export class DestinationService {
           where: { id },
           data: {
             ...destinationData,
+            coverId: newCoverId,
             tags: {
               set: tagIds.map((id) => ({ id })),
             },
           },
-          include: { category: true, tags: true }, // Sertakan relasi di response
+          include: { category: true, tags: true },
         });
       } else {
         return tx.destination.update({
           where: { id: id },
           data: {
             ...destinationData,
+            coverId: newCoverId,
           },
           include: { category: true, tags: true },
         });
       }
     });
+
+    if (cover === null && checkDestination.coverId) {
+      await db.image.delete({
+        where: { id: checkDestination.coverId },
+      });
+    }
     await db.activityLog.create({
       data: {
         action: "UPDATE_DESTINATION",
         from: admin.role,
-        userId: admin.id,
+        username: admin.username,
         details: activityLog("destination", updatedDestination.slug),
       },
     });
     return updatedDestination;
   }
   static async DELETE(id: string, admin: UserPayload) {
-    const checkDestianation = await db.destination.findUnique({ where: { id }, select: { id: true } });
+    const checkDestianation = await db.destination.findUnique({ where: { id }, select: { id: true, coverId: true } });
     if (!checkDestianation) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
     const deletedDestination = await db.destination.delete({ where: { id }, select: { id: true, slug: true } });
+    if (checkDestianation.coverId) {
+      const coverPublicId = await db.image.delete({ where: { id: checkDestianation.coverId }, select: { publicId: true } });
+      coverPublicId.publicId && (await cloudinary.uploader.destroy(coverPublicId.publicId));
+    }
     await db.activityLog.create({
       data: {
         action: "DELETE_DESTINATION",
         from: admin.role,
-        userId: admin.id,
+        username: admin.username,
         details: activityLog("destination", deletedDestination.slug),
       },
     });
@@ -216,21 +245,22 @@ export class DestinationCommentService {
       data: {
         action: validatedBody.parentId ? "REPLY_COMMENT" : "CREATE_COMMENT",
         from: user.role,
-        userId: user.id,
+        username: user.username,
         details: activityLog("comment", checkDestination.title),
       },
     });
     return comment;
   }
   static async DELETE(id: string, user: UserPayload) {
-    const checkComment = await db.comment.findUnique({ where: { id }, select: { destination: { select: { title: true } } } });
+    const checkComment = await db.comment.findUnique({ where: { id }, select: { destination: { select: { title: true } }, author: { select: { username: true } } } });
     if (!checkComment) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("comment"));
+    if (checkComment.author.username !== user.username) throw new ResponseError(ErrorResponseMessage.FORBIDDEN());
     const deletedComment = await db.comment.delete({ where: { id }, select: { id: true } });
     await db.activityLog.create({
       data: {
         action: "DELETE_COMMENT",
         from: user.role,
-        userId: user.id,
+        username: user.username,
         details: activityLog("comment", checkComment.destination?.title),
       },
     });

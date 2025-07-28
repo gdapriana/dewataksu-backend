@@ -25,6 +25,13 @@ export class DestinationValidation {
     categoryId: z.string().cuid({ message: "invalid category id" }),
     price: z.number().optional().nullable(),
     tags: z.array(z.string().min(1)).optional(),
+    cover: z
+      .object({
+        url: z.string().url().nullable(),
+        publicId: z.string().nullable().optional(),
+      })
+      .nullable()
+      .optional(),
   });
 
   static readonly PATCH = z.object({
@@ -37,6 +44,13 @@ export class DestinationValidation {
     categoryId: z.string().cuid({ message: "invalid category id" }).optional(),
     price: z.number().optional().nullable(),
     tags: z.array(z.string().min(1)).optional(),
+    cover: z
+      .object({
+        url: z.string().url().nullable(),
+        publicId: z.string().nullable().optional(),
+      })
+      .nullable()
+      .optional(),
   });
 }
 

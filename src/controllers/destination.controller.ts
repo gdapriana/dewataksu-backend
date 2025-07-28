@@ -44,6 +44,15 @@ export class DestinationController {
       next(e);
     }
   }
+  static async DELETE(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const result = await DestinationService.DELETE(id, req.user!);
+      res.status(200).json({ result });
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 export class DestinationCommentController {
@@ -58,8 +67,12 @@ export class DestinationCommentController {
     }
   }
   static async DELETE(req: UserRequest, res: Response, next: NextFunction) {
-    const { id } = req.params;
-    const result = await DestinationCommentService.DELETE(id, req.user!);
-    res.status(200).json({ result });
+    try {
+      const { id } = req.params;
+      const result = await DestinationCommentService.DELETE(id, req.user!);
+      res.status(200).json({ result });
+    } catch (e) {
+      next(e);
+    }
   }
 }

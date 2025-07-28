@@ -1,5 +1,5 @@
 ### GET
-GET http://localhost:5050/api/destinations/pantai-lebih
+GET http://localhost:5050/api/destinations/jodipan-colorful-village
 
 ### GETS
 GET http://localhost:5050/api/destinations
@@ -8,33 +8,42 @@ GET http://localhost:5050/api/destinations
 ### POST
 POST http://localhost:5050/api/destinations
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZGxub2podzAwMDFpMGtxNGRnZm1qZ20iLCJ1c2VybmFtZSI6InVzZXIiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1MzYyMDIzOSwiZXhwIjoxNzUzNzA2NjM5fQ.YablUXlaKsLdszkUD1-Ix2ABr-Cu8JSOy4tHvgH5UAQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZG1xZnoxejAwMDBpMGFybzY3Nm5pYjAiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzNjg0NTQwLCJleHAiOjE3NTM3NzA5NDB9.kq0-1xUewbHw8HGeTXFROqya4tIlTBlJOOLEY7zPQjE
 
 {
-    "title": "test destination 5",
-    "categoryId": "cmdlnojmx0003i0kq5kz83jkz",
+    "title": "test destination 1",
+    "cover": {
+        "url": "https://google.com"
+    },
+    "categoryId": "cmdmqfz6a0002i0arwjryzq8s",
     "tags": ["beach", "mountain", "popular"]
 }
 
 ### PATCH
-PATCH http://localhost:5050/api/destinations/cmdlnojvz000ci0kql2ojjyho
+PATCH http://localhost:5050/api/destinations/cmdmr5dsq0000i0rii6s0aoug
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZGxub2podzAwMDBpMGtxbTNuNDhwM2kiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzNjIyMzYzLCJleHAiOjE3NTM3MDg3NjN9.RQvpqUyIetId6fAPw8ZpG0OJ75p0-aJVTCZex4xI7P4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZG1pNGpkazAwMDBpMGY1dW4zZHAweTQiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzNjcwNTA0LCJleHAiOjE3NTM3NTY5MDR9.KoEgtR3cHIuiIh04zfc8Gj0ww0q-Xk_3YCmRnRtnPq8
 
 {
-    "title": "Kuta Beach 2",
-    "categoryId": "cmdlnojmx0004i0kqqse64m2s",
-    "tags": ["lolok", "pepek"]
+    "cover": null
 }
+
+### DELETE
+DELETE http://localhost:5050/api/destinations/cmdmr5dsq0000i0rii6s0aoug
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZG1pNGpkazAwMDBpMGY1dW4zZHAweTQiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzNjcwNTA0LCJleHAiOjE3NTM3NTY5MDR9.KoEgtR3cHIuiIh04zfc8Gj0ww0q-Xk_3YCmRnRtnPq
 
 ######## COMMENT
 
 ### POST
-POST  http://localhost:5050/api/destinations/cmdlnojvz000ci0kql2ojjyho/comment
+POST  http://localhost:5050/api/destinations/cmdmqfzf8000ci0ar6nc76h4k/comment
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZGxub2podzAwMDFpMGtxNGRnZm1qZ20iLCJ1c2VybmFtZSI6InVzZXIiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1MzYzNzAxNCwiZXhwIjoxNzUzNzIzNDE0fQ.QESqC0HaNR95n49x2MBRKMFzvUjMLmZyZDLoZDl0umI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZG1xZnoxejAwMDFpMGFyYTNydGJwODUiLCJ1c2VybmFtZSI6InVzZXIiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1MzY5MTYyNywiZXhwIjoxNzUzNzc4MDI3fQ.pZ5Dly6kh7JFXWDq0RNiMvic6IjTTuFEe3Z0rd8BFXg
 
 {
     "content": "test comment repply",
-    "parentId": "cmdly9kxk0001i0v0yy8fru0m"
+    "parentId": "cmdmursf10001i01rxm9xnzfl"
 }
+
+### DELETE
+DELETE  http://localhost:5050/api/comments/cmdmut9oy0005i01rjrun0amd
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZG1xZnoxejAwMDFpMGFyYTNydGJwODUiLCJ1c2VybmFtZSI6InVzZXIiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1MzY5MTYyNywiZXhwIjoxNzUzNzc4MDI3fQ.pZ5Dly6kh7JFXWDq0RNiMvic6IjTTuFEe3Z0rd8BFXg

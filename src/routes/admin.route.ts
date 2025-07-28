@@ -8,5 +8,6 @@ adminRoute.use(adminMiddleware);
 // destinations
 adminRoute.post("/api/destinations", DestinationController.POST);
 adminRoute.patch("/api/destinations/:id", DestinationController.PATCH);
+adminRoute.delete("/api/destinations/:id", DestinationController.DELETE);
 
 export default adminRoute;

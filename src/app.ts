@@ -6,6 +6,7 @@ import publicRoute from "./routes/public.route";
 import { ResponseError } from "./utils/error-response";
 import userRoute from "./routes/user.route";
 import adminRoute from "./routes/admin.route";
+import cloudinaryRoute from "./routes/cloudinary.route";
 
 const app: Application = express();
 app.use(express.json());
@@ -23,6 +24,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use(publicRoute);
 app.use(userRoute);
+app.use(cloudinaryRoute);
 app.use(adminRoute);
 
 app.use((req, res, next) => {
