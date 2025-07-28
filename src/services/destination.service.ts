@@ -293,7 +293,7 @@ export class DestinationBookmarkService {
         action: "SAVE_DESTINATION",
         from: user.role,
         username: user.username,
-        details: activityLog("destination", bookmark.destination?.slug),
+        details: activityLog("bookmark", bookmark.destination?.slug),
       },
     });
     return bookmark;
@@ -314,7 +314,60 @@ export class DestinationBookmarkService {
         action: "SAVE_DESTINATION",
         from: user.role,
         username: user.username,
-        details: activityLog("destination", checkDestination.slug),
+        details: activityLog("bookmark", checkDestination.slug),
+      },
+    });
+    return "ok";
+  }
+}
+
+export class DestinationLikeService {
+  static async POST(id: string, user: UserPayload) {
+    const checkDestination = await db.destination.findUnique({ where: { id }, select: { id: true } });
+    if (!checkDestination) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
+    const checkLiked = await db.like.findFirst({ where: { destinationId: id, userId: user.id } });
+    if (checkLiked) throw new ResponseError(ErrorResponseMessage.ALREADY_EXISTS("like"));
+    const like = await db.like.create({
+      data: {
+        destinationId: id,
+        userId: user.id,
+      },
+      select: {
+        destination: {
+          select: {
+            slug: true,
+            title: true,
+          },
+        },
+      },
+    });
+    await db.activityLog.create({
+      data: {
+        action: "LIKE_DESTINATION",
+        from: user.role,
+        username: user.username,
+        details: activityLog("like", like.destination?.slug),
+      },
+    });
+    return like;
+  }
+
+  static async DELETE(id: string, user: UserPayload) {
+    const checkDestination = await db.destination.findUnique({ where: { id }, select: { id: true, slug: true } });
+    if (!checkDestination) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
+
+    await db.like.deleteMany({
+      where: {
+        AND: [{ userId: user.id }, { destinationId: id }],
+      },
+    });
+
+    await db.activityLog.create({
+      data: {
+        action: "LIKE_DESTINATION",
+        from: user.role,
+        username: user.username,
+        details: activityLog("bookmark", checkDestination.slug),
       },
     });
     return "ok";
