@@ -267,3 +267,56 @@ export class DestinationCommentService {
     return deletedComment;
   }
 }
+
+export class DestinationBookmarkService {
+  static async POST(id: string, user: UserPayload) {
+    const checkDestination = await db.destination.findUnique({ where: { id }, select: { id: true } });
+    if (!checkDestination) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
+    const checkBookmarked = await db.bookmark.findFirst({ where: { destinationId: id, userId: user.id } });
+    if (checkBookmarked) throw new ResponseError(ErrorResponseMessage.ALREADY_EXISTS("bookmark"));
+    const bookmark = await db.bookmark.create({
+      data: {
+        destinationId: id,
+        userId: user.id,
+      },
+      select: {
+        destination: {
+          select: {
+            slug: true,
+            title: true,
+          },
+        },
+      },
+    });
+    await db.activityLog.create({
+      data: {
+        action: "SAVE_DESTINATION",
+        from: user.role,
+        username: user.username,
+        details: activityLog("destination", bookmark.destination?.slug),
+      },
+    });
+    return bookmark;
+  }
+
+  static async DELETE(id: string, user: UserPayload) {
+    const checkDestination = await db.destination.findUnique({ where: { id }, select: { id: true, slug: true } });
+    if (!checkDestination) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
+
+    await db.bookmark.deleteMany({
+      where: {
+        AND: [{ userId: user.id }, { destinationId: id }],
+      },
+    });
+
+    await db.activityLog.create({
+      data: {
+        action: "SAVE_DESTINATION",
+        from: user.role,
+        username: user.username,
+        details: activityLog("destination", checkDestination.slug),
+      },
+    });
+    return "ok";
+  }
+}

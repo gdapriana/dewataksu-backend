@@ -1,7 +1,7 @@
 import express from "express";
 import verifyMiddleware from "../middleware/verify.middleware";
 import UserController from "../controllers/user.controller";
-import { DestinationCommentController } from "../controllers/destination.controller";
+import { DestinationBookmarkController, DestinationCommentController } from "../controllers/destination.controller";
 
 const userRoute = express.Router();
 userRoute.use(verifyMiddleware);
@@ -11,7 +11,9 @@ userRoute.get("/api/me", UserController.ME);
 userRoute.post("/api/destinations/:id/comment", DestinationCommentController.POST);
 userRoute.delete("/api/comments/:id", DestinationCommentController.DELETE);
 
-// DESTINATION | LIKE
+// DESTINATION | BOOKMARK
+userRoute.post("/api/destinations/:id/bookmark", DestinationBookmarkController.POST);
+userRoute.delete("/api/destinations/:id/bookmark", DestinationBookmarkController.DELETE);
 // DESTINATION | SAVE
 
 export default userRoute;
