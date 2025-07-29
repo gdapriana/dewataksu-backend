@@ -1,0 +1,3 @@
+### POST
+
+GET  http://localhost:5050/api/categories/cmdospeja0002gup9wrzdyq2k/
