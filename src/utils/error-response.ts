@@ -1,6 +1,6 @@
 import { ErrorResponse } from "../utils/types";
 
-type Schema = "user" | "activity" | "category" | "like" | "tag" | "user" | "destination" | "tradition" | "story" | "comment" | "bookmark" | "comment";
+type Schema = "user" | "activity" | "gallery" | "image" | "category" | "like" | "tag" | "user" | "destination" | "tradition" | "story" | "comment" | "bookmark" | "comment";
 
 export class ErrorResponseMessage {
   static INVALID_USERNAME_PASSWORD(): ErrorResponse {

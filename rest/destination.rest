@@ -72,3 +72,28 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZG1xZnoxe
 DELETE  http://localhost:5050/api/destinations/cmdmqfzf8000ci0ar6nc76h4k/like
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZG1xZnoxejAwMDFpMGFyYTNydGJwODUiLCJ1c2VybmFtZSI6InVzZXIiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1MzY5MTYyNywiZXhwIjoxNzUzNzc4MDI3fQ.pZ5Dly6kh7JFXWDq0RNiMvic6IjTTuFEe3Z0rd8BFXg
+
+
+########## GALLERY
+
+### POST
+POST  http://localhost:5050/api/destinations/cmdospert000cgup9ugvtb34g/gallery
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZG9qc3ptMTAwMDB1Z3MzYmVhZzV6a3oiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzNzk0MzY4LCJleHAiOjE3NTM4ODA3Njh9.Qnnn4nB_P61xSCzs89RQd89C5rHavGbSpH-ue-BcvaQ
+
+[
+    {
+        "url": "https://google.com2", "publicId": "saidisahdahd"
+    }
+]
+
+
+### DELETE
+DELETE  http://localhost:5050/api/destinations/cmdospert000cgup9ugvtb34g/gallery
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZG9qc3ptMTAwMDB1Z3MzYmVhZzV6a3oiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzNzk0MzY4LCJleHAiOjE3NTM4ODA3Njh9.Qnnn4nB_P61xSCzs89RQd89C5rHavGbSpH-ue-BcvaQ
+
+[
+    "cmdosufeg0007guvzgvcage5k",
+    "cmdoswn3t0003gu6t31qbn5bj"
+]

@@ -2,7 +2,7 @@ import z from "zod";
 import db from "../database/db";
 import { ErrorResponseMessage, ResponseError } from "../utils/error-response";
 import { GET, GETS } from "../utils/relation/destination";
-import { DestinationCommentValidation, DestinationValidation } from "../validation/destination.validation";
+import { DestinationCommentValidation, DestinationGalleryVaidation, DestinationValidation } from "../validation/destination.validation";
 import Validation from "../validation/validation";
 import { Prisma } from "@prisma/client";
 import slugify from "../utils/slugify";
@@ -215,7 +215,6 @@ export class DestinationService {
     return deletedDestination;
   }
 }
-
 export class DestinationCommentService {
   static async POST(id: string, body: z.infer<typeof DestinationCommentValidation.POST>, user: UserPayload) {
     const validatedBody: z.infer<typeof DestinationCommentValidation.POST> = Validation.validate(DestinationCommentValidation.POST, body);
@@ -223,7 +222,7 @@ export class DestinationCommentService {
       where: { id },
       select: {
         id: true,
-        title: true,
+        slug: true,
       },
     });
     if (!checkDestination) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
@@ -246,13 +245,13 @@ export class DestinationCommentService {
         action: validatedBody.parentId ? "REPLY_COMMENT" : "CREATE_COMMENT",
         from: user.role,
         username: user.username,
-        details: activityLog("comment", checkDestination.title),
+        details: activityLog("comment", checkDestination.slug),
       },
     });
     return comment;
   }
   static async DELETE(id: string, user: UserPayload) {
-    const checkComment = await db.comment.findUnique({ where: { id }, select: { destination: { select: { title: true } }, author: { select: { username: true } } } });
+    const checkComment = await db.comment.findUnique({ where: { id }, select: { destination: { select: { slug: true } }, author: { select: { username: true } } } });
     if (!checkComment) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("comment"));
     if (checkComment.author.username !== user.username) throw new ResponseError(ErrorResponseMessage.FORBIDDEN());
     const deletedComment = await db.comment.delete({ where: { id }, select: { id: true } });
@@ -261,13 +260,12 @@ export class DestinationCommentService {
         action: "DELETE_COMMENT",
         from: user.role,
         username: user.username,
-        details: activityLog("comment", checkComment.destination?.title),
+        details: activityLog("comment", checkComment.destination?.slug),
       },
     });
     return deletedComment;
   }
 }
-
 export class DestinationBookmarkService {
   static async POST(id: string, user: UserPayload) {
     const checkDestination = await db.destination.findUnique({ where: { id }, select: { id: true } });
@@ -290,7 +288,7 @@ export class DestinationBookmarkService {
     });
     await db.activityLog.create({
       data: {
-        action: "SAVE_DESTINATION",
+        action: "BOOKMARK_DESTINATION",
         from: user.role,
         username: user.username,
         details: activityLog("bookmark", bookmark.destination?.slug),
@@ -311,7 +309,7 @@ export class DestinationBookmarkService {
 
     await db.activityLog.create({
       data: {
-        action: "SAVE_DESTINATION",
+        action: "UNBOOKMARK_DESTINATION",
         from: user.role,
         username: user.username,
         details: activityLog("bookmark", checkDestination.slug),
@@ -320,7 +318,6 @@ export class DestinationBookmarkService {
     return "ok";
   }
 }
-
 export class DestinationLikeService {
   static async POST(id: string, user: UserPayload) {
     const checkDestination = await db.destination.findUnique({ where: { id }, select: { id: true } });
@@ -367,9 +364,73 @@ export class DestinationLikeService {
         action: "LIKE_DESTINATION",
         from: user.role,
         username: user.username,
-        details: activityLog("bookmark", checkDestination.slug),
+        details: activityLog("like", checkDestination.slug),
       },
     });
     return "ok";
+  }
+}
+export class DestinationGalleryService {
+  static async POST(id: string, body: z.infer<typeof DestinationGalleryVaidation.POST>, admin: UserPayload) {
+    const validatedBody: z.infer<typeof DestinationGalleryVaidation.POST> = Validation.validate(DestinationGalleryVaidation.POST, body);
+    const checkDestination = await db.destination.findUnique({ where: { id }, select: { id: true, slug: true } });
+    if (!checkDestination) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
+
+    const result = db.$transaction(async (tx) => {
+      const imageData = await tx.image.createManyAndReturn({
+        data: validatedBody,
+        select: {
+          id: true,
+        },
+      });
+
+      const galleryData = imageData.map((image) => ({
+        destinationId: id,
+        imageId: image.id,
+      }));
+
+      const createdGallery = await tx.gallery.createMany({
+        data: galleryData,
+      });
+      return createdGallery;
+    });
+
+    await db.activityLog.create({
+      data: {
+        action: "ADD_GALLERY",
+        username: admin.username,
+        details: activityLog("gallery", checkDestination.slug),
+      },
+    });
+    return result;
+  }
+
+  static async DELETE(id: string, body: z.infer<typeof DestinationGalleryVaidation.DELETE>, admin: UserPayload) {
+    const validatedBody: z.infer<typeof DestinationGalleryVaidation.DELETE> = Validation.validate(DestinationGalleryVaidation.DELETE, body);
+    const checkDestination = await db.destination.findUnique({ where: { id }, select: { id: true, slug: true } });
+    if (!checkDestination) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
+
+    const result = db.$transaction(async (tx) => {
+      const galleryData = await tx.gallery.findMany({ where: { id: { in: validatedBody } }, select: { id: true, imageId: true } });
+      if (validatedBody.length !== galleryData.length) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("gallery"));
+      const imageIds = galleryData.map((image) => image.imageId) as string[];
+
+      if (galleryData.length !== imageIds.length) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("image"));
+
+      await tx.gallery.deleteMany({ where: { id: { in: validatedBody } } });
+      await tx.image.deleteMany({ where: { id: { in: imageIds } } });
+
+      return "success";
+    });
+
+    await db.activityLog.create({
+      data: {
+        username: admin.username,
+        action: "REMOVE_GALLERY",
+        details: activityLog("gallery", checkDestination.slug),
+      },
+    });
+
+    return result;
   }
 }

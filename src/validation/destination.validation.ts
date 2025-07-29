@@ -60,3 +60,15 @@ export class DestinationCommentValidation {
     parentId: z.string().cuid().optional(),
   });
 }
+
+export class DestinationGalleryVaidation {
+  static readonly POST = z
+    .array(
+      z.object({
+        url: z.string().url(),
+        publicId: z.string().nullable().optional(),
+      }),
+    )
+    .nonempty();
+  static readonly DELETE = z.array(z.string()).nonempty();
+}
