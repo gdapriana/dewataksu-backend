@@ -1,6 +1,7 @@
 import express from "express";
 import UserController from "../controllers/user.controller";
 import { DestinationController } from "../controllers/destination.controller";
+import { CategoryController } from "../controllers/category.controller";
 
 const publicRoute = express.Router();
 
@@ -13,5 +14,8 @@ publicRoute.delete("/api/logout", UserController.LOGOUT);
 // DESTINATION
 publicRoute.get("/api/destinations/:slug", DestinationController.GET);
 publicRoute.get("/api/destinations", DestinationController.GETS);
+
+// CATEGORY
+publicRoute.get("/api/categories/:id", CategoryController.GET);
 
 export default publicRoute;
