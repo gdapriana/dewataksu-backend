@@ -2,6 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
+
+// Dummy data for destinations
 const dummyDestinations = [
   { title: "Kuta Beach", address: "Kuta, Badung Regency, Bali", lat: -8.7184, lon: 115.1684, price: 0 },
   { title: "Mount Bromo", address: "Bromo Tengger Semeru National Park, East Java", lat: -7.9425, lon: 112.953, price: 220000 },
@@ -23,6 +25,20 @@ const dummyDestinations = [
   { title: "Old Town Jakarta (Kota Tua)", address: "West Jakarta, DKI Jakarta", lat: -6.1352, lon: 106.813, price: 0 },
   { title: "Nusa Penida", address: "Klungkung Regency, Bali", lat: -8.7369, lon: 115.557, price: 25000 },
   { title: "Jodipan Colorful Village", address: "Jodipan, Malang City, East Java", lat: -7.9866, lon: 112.633, price: 5000 },
+];
+
+// --- DATA TRADISI BARU DITAMBAHKAN DI SINI ---
+const dummyTraditions = [
+  { title: "Ngaben Ceremony", content: "A traditional cremation ceremony in Bali, considered a sacred duty to release the soul of the deceased to the afterlife." },
+  { title: "Galungan and Kuningan", content: "A major Balinese holiday celebrating the victory of dharma (good) over adharma (evil), where ancestors are believed to visit the earth." },
+  { title: "Nyepi Day (Day of Silence)", content: "The Balinese New Year, a day of complete silence, fasting, and meditation for self-reflection across the entire island." },
+  {
+    title: "Kecak Dance",
+    content: "A form of Balinese Hindu dance and music drama performed by a circle of a hundred or more performers wearing checked cloths around their waists, famous for its 'chak-chak' chant.",
+  },
+  { title: "Barong Dance", content: "A traditional Balinese dance that narrates the eternal battle between the good spirit Barong and the evil queen Rangda." },
+  { title: "Canang Sari", content: "Daily offerings made by Balinese Hindus to thank the Sang Hyang Widhi Wasa in praise and prayer, seen everywhere in Bali." },
+  { title: "Omed-omedan", content: "Known as the 'kissing festival,' a unique ceremony held the day after Nyepi in Sesetan, Denpasar, to strengthen community bonds." },
 ];
 
 async function main() {
@@ -76,7 +92,6 @@ async function main() {
       .toLowerCase()
       .replace(/ /g, "-")
       .replace(/[^\w-]+/g, "");
-
     const randomCategory = createdCategories[Math.floor(Math.random() * createdCategories.length)];
     const randomTag1 = createdTags[Math.floor(Math.random() * createdTags.length)];
     const randomTag2 = createdTags[Math.floor(Math.random() * createdTags.length)];
@@ -89,14 +104,27 @@ async function main() {
         address: dest.address,
         latitude: dest.lat,
         longitude: dest.lon,
-        price: dest.price,
-        mapUrl: `https://www.google.com/maps?q=$${dest.lat},${dest.lon}`,
         category: {
           connect: { id: randomCategory.id },
         },
         tags: {
           connect: [{ id: randomTag1.id }, ...(randomTag1.id !== randomTag2.id ? [{ id: randomTag2.id }] : [])],
         },
+      },
+    });
+  }
+
+  console.log("🎭 Seeding traditions...");
+  for (const tradition of dummyTraditions) {
+    const slug = tradition.title
+      .toLowerCase()
+      .replace(/ /g, "-")
+      .replace(/[^\w-]+/g, "");
+    await prisma.tradition.create({
+      data: {
+        title: tradition.title,
+        slug: slug,
+        content: tradition.content,
       },
     });
   }

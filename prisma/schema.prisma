@@ -116,13 +116,12 @@ model Destination {
 }
 
 model Tradition {
-  id       String  @id @default(cuid())
-  title    String
-  slug     String  @unique
-  content  String
-  imageUrl String
-  coverId  String?
-  cover    Image?  @relation(fields: [coverId], references: [id], onDelete: Cascade)
+  id      String  @id @default(cuid())
+  title   String
+  slug    String  @unique
+  content String
+  coverId String?
+  cover   Image?  @relation(fields: [coverId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
