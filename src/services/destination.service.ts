@@ -1,7 +1,6 @@
 import z from "zod";
 import db from "../database/db";
 import { ErrorResponseMessage, ResponseError } from "../utils/error-response";
-import { GET, GETS } from "../utils/relation/destination";
 import { DestinationCommentValidation, DestinationGalleryVaidation, DestinationValidation } from "../validation/destination.validation";
 import Validation from "../validation/validation";
 import { Prisma } from "@prisma/client";
@@ -9,14 +8,13 @@ import slugify from "../utils/slugify";
 import { UserPayload } from "../utils/types";
 import activityLog from "../utils/activity-log";
 import { cloudinary } from "../utils/cloudinary";
+import { DestinationRelation } from "../utils/relation/destination";
 
 export class DestinationService {
   static async GET(slug: string) {
     const destinationCheck = await db.destination.findUnique({
       where: { slug },
-      include: {
-        ...GET,
-      },
+      include: DestinationRelation.GET,
     });
     if (!destinationCheck) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
     return destinationCheck;
@@ -40,7 +38,7 @@ export class DestinationService {
     }
     const destinations = await db.destination.findMany({
       where,
-      include: GETS,
+      include: DestinationRelation.GETS,
       take: size,
       skip: cursor ? 1 : (page - 1) * size,
       cursor: cursor ? { id: cursor } : undefined,
@@ -100,10 +98,7 @@ export class DestinationService {
     }
     const newDestination = await db.destination.create({
       data: { ...createData },
-      include: {
-        category: true,
-        tags: true,
-      },
+      select: DestinationRelation.POST,
     });
 
     await db.activityLog.create({
@@ -167,7 +162,7 @@ export class DestinationService {
               set: tagIds.map((id) => ({ id })),
             },
           },
-          include: { category: true, tags: true },
+          select: DestinationRelation.PATCH,
         });
       } else {
         return tx.destination.update({
@@ -176,7 +171,7 @@ export class DestinationService {
             ...destinationData,
             coverId: newCoverId,
           },
-          include: { category: true, tags: true },
+          select: DestinationRelation.PATCH,
         });
       }
     });
@@ -199,11 +194,16 @@ export class DestinationService {
   static async DELETE(id: string, admin: UserPayload) {
     const checkDestianation = await db.destination.findUnique({ where: { id }, select: { id: true, coverId: true } });
     if (!checkDestianation) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
-    const deletedDestination = await db.destination.delete({ where: { id }, select: { id: true, slug: true } });
+    const deletedDestination = await db.destination.delete({ where: { id }, select: DestinationRelation.DELETE });
     if (checkDestianation.coverId) {
       const coverPublicId = await db.image.delete({ where: { id: checkDestianation.coverId }, select: { publicId: true } });
       coverPublicId.publicId && (await cloudinary.uploader.destroy(coverPublicId.publicId));
     }
+    await db.gallery.deleteMany({
+      where: {
+        destinationId: id,
+      },
+    });
     await db.activityLog.create({
       data: {
         action: "DELETE_DESTINATION",
