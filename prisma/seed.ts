@@ -32,6 +32,12 @@ async function main() {
   await prisma.destination.deleteMany();
   await prisma.tag.deleteMany();
   await prisma.category.deleteMany();
+  await prisma.activityLog.deleteMany();
+  await prisma.bookmark.deleteMany();
+  await prisma.like.deleteMany();
+  await prisma.tradition.deleteMany();
+  await prisma.comment.deleteMany();
+  await prisma.gallery.deleteMany();
   await prisma.image.deleteMany();
 
   console.log("seeding users...");
