@@ -1,3 +1,29 @@
-### POST
-
+### GET
 GET  http://localhost:5050/api/categories/cmdospeja0002gup9wrzdyq2k/
+
+### GETS
+GET  http://localhost:5050/api/categories?title=beach
+
+### POST
+POST http://localhost:5050/api/categories
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZG9zcGVleTAwMDBndXA5eXo5dTA3ZTUiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzODMzMzgzLCJleHAiOjE3NTM5MTk3ODN9.tm2KQkJe7rdlk5Z0JBPSq0MFLC6jgsZNF9G8U_B8ymQ
+Content-Type: application/json
+
+{
+    "name": "River"
+}
+
+### PATCH
+PATCH http://localhost:5050/api/categories/cmdp7ce9j0000i0ho2nd90yzr
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZG9zcGVleTAwMDBndXA5eXo5dTA3ZTUiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzODMzMzgzLCJleHAiOjE3NTM5MTk3ODN9.tm2KQkJe7rdlk5Z0JBPSq0MFLC6jgsZNF9G8U_B8ymQ
+Content-Type: application/json
+
+{
+    "name": "Urban Tourism"
+}
+
+
+### DELETE 
+DELETE http://localhost:5050/api/categories/cmdp7ce9j0000i0ho2nd90yzr
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZG9zcGVleTAwMDBndXA5eXo5dTA3ZTUiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzODMzMzgzLCJleHAiOjE3NTM5MTk3ODN9.tm2KQkJe7rdlk5Z0JBPSq0MFLC6jgsZNF9G8U_B8ymQ
+Content-Type: application/json

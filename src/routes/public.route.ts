@@ -17,5 +17,6 @@ publicRoute.get("/api/destinations", DestinationController.GETS);
 
 // CATEGORY
 publicRoute.get("/api/categories/:id", CategoryController.GET);
+publicRoute.get("/api/categories", CategoryController.GETS);
 
 export default publicRoute;
