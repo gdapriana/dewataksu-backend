@@ -2,7 +2,7 @@ import express from "express";
 import adminMiddleware from "../middleware/admin.middleware";
 import { DestinationController, DestinationGalleryController } from "../controllers/destination.controller";
 import { CategoryController } from "../controllers/category.controller";
-import { TraditionController } from "../controllers/tradition.controller";
+import { TraditionController, TraditionGalleryController } from "../controllers/tradition.controller";
 
 const adminRoute = express.Router();
 adminRoute.use(adminMiddleware);
@@ -18,6 +18,8 @@ adminRoute.delete("/api/destinations/:id/gallery", DestinationGalleryController.
 adminRoute.post("/api/traditions", TraditionController.POST);
 adminRoute.patch("/api/traditions/:id", TraditionController.PATCH);
 adminRoute.delete("/api/traditions/:id", TraditionController.DELETE);
+adminRoute.post("/api/traditions/:id/gallery", TraditionGalleryController.POST);
+adminRoute.delete("/api/traditions/:id/gallery", TraditionGalleryController.DELETE);
 
 // category
 adminRoute.post("/api/categories", CategoryController.POST);

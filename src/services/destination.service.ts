@@ -251,11 +251,13 @@ export class DestinationCommentService {
     });
     return comment;
   }
-  static async DELETE(id: string, user: UserPayload) {
-    const checkComment = await db.comment.findUnique({ where: { id }, select: { destination: { select: { slug: true } }, author: { select: { username: true } } } });
+  static async DELETE(destinationId: string, commentId: string, user: UserPayload) {
+    const checkDestination = await db.destination.findUnique({ where: { id: destinationId }, select: { id: true } });
+    if (!checkDestination) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("destination"));
+    const checkComment = await db.comment.findUnique({ where: { id: commentId }, select: { destination: { select: { slug: true } }, author: { select: { username: true } } } });
     if (!checkComment) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("comment"));
     if (checkComment.author.username !== user.username) throw new ResponseError(ErrorResponseMessage.FORBIDDEN());
-    const deletedComment = await db.comment.delete({ where: { id }, select: { id: true } });
+    const deletedComment = await db.comment.delete({ where: { id: commentId }, select: { id: true } });
     await db.activityLog.create({
       data: {
         action: "DELETE_COMMENT",

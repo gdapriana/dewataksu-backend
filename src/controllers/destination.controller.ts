@@ -68,8 +68,8 @@ export class DestinationCommentController {
   }
   static async DELETE(req: UserRequest, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
-      const result = await DestinationCommentService.DELETE(id, req.user!);
+      const { destinationId, commentId } = req.params;
+      const result = await DestinationCommentService.DELETE(destinationId, commentId, req.user!);
       res.status(200).json({ result });
     } catch (e) {
       next(e);

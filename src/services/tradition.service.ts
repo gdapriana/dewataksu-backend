@@ -2,7 +2,7 @@ import z from "zod";
 import db from "../database/db";
 import { ErrorResponseMessage, ResponseError } from "../utils/error-response";
 import { TraditionRelation } from "../utils/relation/tradition";
-import { TraditionValidation } from "../validation/tradition.validation";
+import { TraditionCommentValidation, TraditionGalleryVaidation, TraditionValidation } from "../validation/tradition.validation";
 import Validation from "../validation/validation";
 import { Prisma } from "@prisma/client";
 import slugify from "../utils/slugify";
@@ -136,13 +136,12 @@ export class TraditionService {
         action: "UPDATE_DESTINATION",
         from: admin.role,
         username: admin.username,
-        details: activityLog("destination", updatedTradition.slug),
+        details: activityLog("tradition", updatedTradition.slug),
       },
     });
 
     return updatedTradition;
   }
-
   static async DELETE(id: string, admin: UserPayload) {
     const checkTradition = await db.tradition.findUnique({ where: { id }, select: { id: true, coverId: true } });
     if (!checkTradition) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("tradition"));
@@ -165,5 +164,218 @@ export class TraditionService {
       },
     });
     return deletedTradition;
+  }
+}
+export class TraditionCommentService {
+  static async POST(id: string, body: z.infer<typeof TraditionCommentValidation.POST>, user: UserPayload) {
+    const checkTradition = await db.tradition.findUnique({ where: { id }, select: { id: true, slug: true } });
+    if (!checkTradition) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("tradition"));
+    const validatedBody: z.infer<typeof TraditionCommentValidation.POST> = Validation.validate(TraditionCommentValidation.POST, body);
+    if (validatedBody.parentId) {
+      const checkComment = await db.comment.findUnique({ where: { id: validatedBody.parentId } });
+      if (!checkComment) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("comment"));
+    }
+
+    const comment = await db.comment.create({
+      data: {
+        ...validatedBody,
+        authorId: user.id,
+        traditionId: id,
+      },
+      select: { id: true },
+    });
+
+    await db.activityLog.create({
+      data: {
+        action: validatedBody.parentId ? "REPLY_COMMENT" : "CREATE_COMMENT",
+        from: user.role,
+        username: user.username,
+        details: activityLog("comment", checkTradition.slug),
+      },
+    });
+
+    return comment;
+  }
+  static async DELETE(traditionId: string, commentId: string, user: UserPayload) {
+    const checkTradition = await db.tradition.findUnique({ where: { id: traditionId }, select: { id: true } });
+    if (!checkTradition) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("tradition"));
+    const checkComment = await db.comment.findUnique({ where: { id: commentId }, select: { tradition: { select: { slug: true } }, author: { select: { username: true } } } });
+    if (!checkComment) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("comment"));
+    if (checkComment.author.username !== user.username) throw new ResponseError(ErrorResponseMessage.FORBIDDEN());
+    const deletedComment = await db.comment.delete({ where: { id: commentId }, select: { id: true } });
+    await db.activityLog.create({
+      data: {
+        action: "DELETE_COMMENT",
+        from: user.role,
+        username: user.username,
+        details: activityLog("comment", checkComment.tradition?.slug),
+      },
+    });
+    return deletedComment;
+  }
+}
+export class TraditionBookmarkService {
+  static async POST(id: string, user: UserPayload) {
+    const checkTradition = await db.tradition.findUnique({ where: { id }, select: { id: true } });
+    if (!checkTradition) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("tradition"));
+    const checkBookmarked = await db.bookmark.findFirst({ where: { traditionId: id, userId: user.id } });
+    if (checkBookmarked) throw new ResponseError(ErrorResponseMessage.ALREADY_EXISTS("bookmark"));
+    const bookmark = await db.bookmark.create({
+      data: {
+        traditionId: id,
+        userId: user.id,
+      },
+      select: {
+        tradition: {
+          select: {
+            slug: true,
+            title: true,
+          },
+        },
+      },
+    });
+    await db.activityLog.create({
+      data: {
+        action: "BOOKMARK_DESTINATION",
+        from: user.role,
+        username: user.username,
+        details: activityLog("bookmark", bookmark.tradition?.slug),
+      },
+    });
+    return bookmark;
+  }
+  static async DELETE(id: string, user: UserPayload) {
+    const checkTradition = await db.tradition.findUnique({ where: { id }, select: { id: true, slug: true } });
+    if (!checkTradition) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("tradition"));
+
+    await db.bookmark.deleteMany({
+      where: {
+        AND: [{ userId: user.id }, { traditionId: id }],
+      },
+    });
+
+    await db.activityLog.create({
+      data: {
+        action: "UNBOOKMARK_DESTINATION",
+        from: user.role,
+        username: user.username,
+        details: activityLog("bookmark", checkTradition.slug),
+      },
+    });
+    return "ok";
+  }
+}
+export class TraditionLikeService {
+  static async POST(id: string, user: UserPayload) {
+    const checkTradition = await db.tradition.findUnique({ where: { id }, select: { id: true } });
+    if (!checkTradition) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("tradition"));
+    const checkLiked = await db.like.findFirst({ where: { traditionId: id, userId: user.id } });
+    if (checkLiked) throw new ResponseError(ErrorResponseMessage.ALREADY_EXISTS("like"));
+    const like = await db.like.create({
+      data: {
+        traditionId: id,
+        userId: user.id,
+      },
+      select: {
+        tradition: {
+          select: {
+            slug: true,
+            title: true,
+          },
+        },
+      },
+    });
+    await db.activityLog.create({
+      data: {
+        action: "LIKE_DESTINATION",
+        from: user.role,
+        username: user.username,
+        details: activityLog("like", like.tradition?.slug),
+      },
+    });
+    return like;
+  }
+  static async DELETE(id: string, user: UserPayload) {
+    const checkTradition = await db.tradition.findUnique({ where: { id }, select: { id: true, slug: true } });
+    if (!checkTradition) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("tradition"));
+
+    await db.like.deleteMany({
+      where: {
+        AND: [{ userId: user.id }, { traditionId: id }],
+      },
+    });
+
+    await db.activityLog.create({
+      data: {
+        action: "LIKE_DESTINATION",
+        from: user.role,
+        username: user.username,
+        details: activityLog("like", checkTradition.slug),
+      },
+    });
+    return "ok";
+  }
+}
+export class TraditionGalleryService {
+  static async POST(id: string, body: z.infer<typeof TraditionGalleryVaidation.POST>, admin: UserPayload) {
+    const validatedBody: z.infer<typeof TraditionGalleryVaidation.POST> = Validation.validate(TraditionGalleryVaidation.POST, body);
+    const checkTradition = await db.tradition.findUnique({ where: { id }, select: { id: true, slug: true } });
+    if (!checkTradition) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("tradition"));
+
+    const result = db.$transaction(async (tx) => {
+      const imageData = await tx.image.createManyAndReturn({
+        data: validatedBody,
+        select: {
+          id: true,
+        },
+      });
+
+      const galleryData = imageData.map((image) => ({
+        traditionId: id,
+        imageId: image.id,
+      }));
+
+      const createdGallery = await tx.gallery.createMany({
+        data: galleryData,
+      });
+      return createdGallery;
+    });
+
+    await db.activityLog.create({
+      data: {
+        action: "ADD_GALLERY",
+        username: admin.username,
+        details: activityLog("gallery", checkTradition.slug),
+      },
+    });
+    return result;
+  }
+  static async DELETE(id: string, body: z.infer<typeof TraditionGalleryVaidation.DELETE>, admin: UserPayload) {
+    const validatedBody: z.infer<typeof TraditionGalleryVaidation.DELETE> = Validation.validate(TraditionGalleryVaidation.DELETE, body);
+    const checkTradition = await db.tradition.findUnique({ where: { id }, select: { id: true, slug: true } });
+    if (!checkTradition) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("tradition"));
+
+    const result = db.$transaction(async (tx) => {
+      const galleryData = await tx.gallery.findMany({ where: { id: { in: validatedBody } }, select: { id: true, imageId: true } });
+      if (validatedBody.length !== galleryData.length) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("gallery"));
+      const imageIds = galleryData.map((image) => image.imageId) as string[];
+
+      if (galleryData.length !== imageIds.length) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("image"));
+
+      await tx.gallery.deleteMany({ where: { id: { in: validatedBody } } });
+      await tx.image.deleteMany({ where: { id: { in: imageIds } } });
+
+      return "success";
+    });
+
+    await db.activityLog.create({
+      data: {
+        username: admin.username,
+        action: "REMOVE_GALLERY",
+        details: activityLog("gallery", checkTradition.slug),
+      },
+    });
+
+    return result;
   }
 }

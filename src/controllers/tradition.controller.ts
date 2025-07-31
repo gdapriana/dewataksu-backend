@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { TraditionService } from "../services/tradition.service";
+import { TraditionBookmarkService, TraditionCommentService, TraditionGalleryService, TraditionLikeService, TraditionService } from "../services/tradition.service";
 import z from "zod";
-import { TraditionValidation } from "../validation/tradition.validation";
+import { TraditionCommentValidation, TraditionGalleryVaidation, TraditionValidation } from "../validation/tradition.validation";
 import { UserRequest } from "../utils/types";
 
 export class TraditionController {
@@ -50,6 +50,100 @@ export class TraditionController {
     try {
       const { id } = req.params;
       const result = await TraditionService.DELETE(id, req.user!);
+      res.status(200).json({ result });
+    } catch (e) {
+      console.error(e);
+      next(e);
+    }
+  }
+}
+
+export class TraditionCommentController {
+  static async POST(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const body: z.infer<typeof TraditionCommentValidation.POST> = req.body;
+      const result = await TraditionCommentService.POST(id, body, req.user!);
+      res.status(200).json({ result });
+    } catch (e) {
+      next(e);
+    }
+  }
+  static async DELETE(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { traditionId, commentId } = req.params;
+      const result = await TraditionCommentService.DELETE(traditionId, commentId, req.user!);
+      res.status(200).json({ result });
+    } catch (e) {
+      next(e);
+    }
+  }
+}
+
+export class TraditionBookmarkController {
+  static async POST(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const result = await TraditionBookmarkService.POST(id, req.user!);
+      res.status(200).json({ result });
+    } catch (e) {
+      console.error(e);
+      next(e);
+    }
+  }
+  static async DELETE(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const result = await TraditionBookmarkService.DELETE(id, req.user!);
+      res.status(200).json({ result });
+    } catch (e) {
+      console.error(e);
+      next(e);
+    }
+  }
+}
+
+export class TraditionLikeController {
+  static async POST(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const result = await TraditionLikeService.POST(id, req.user!);
+      res.status(200).json({ result });
+    } catch (e) {
+      console.error(e);
+      next(e);
+    }
+  }
+  static async DELETE(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const result = await TraditionLikeService.DELETE(id, req.user!);
+      res.status(200).json({ result });
+    } catch (e) {
+      console.error(e);
+      next(e);
+    }
+  }
+}
+
+export class TraditionGalleryController {
+  static async POST(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const body: z.infer<typeof TraditionGalleryVaidation.POST> = req.body;
+      const result = await TraditionGalleryService.POST(id, body, req.user!);
+      res.status(200).json({ result });
+    } catch (e) {
+      console.error(e);
+      next(e);
+    }
+  }
+
+  static async DELETE(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const body: z.infer<typeof TraditionGalleryVaidation.DELETE> = req.body;
+      const result = await TraditionGalleryService.DELETE(id, body, req.user!);
       res.status(200).json({ result });
     } catch (e) {
       console.error(e);
