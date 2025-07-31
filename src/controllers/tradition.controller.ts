@@ -35,4 +35,25 @@ export class TraditionController {
       next(e);
     }
   }
+  static async PATCH(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const body: z.infer<typeof TraditionValidation.PATCH> = req.body;
+      const { id } = req.params;
+      const result = await TraditionService.PATCH(id, body, req.user!);
+      res.status(200).json({ result });
+    } catch (e) {
+      console.error(e);
+      next(e);
+    }
+  }
+  static async DELETE(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const result = await TraditionService.DELETE(id, req.user!);
+      res.status(200).json({ result });
+    } catch (e) {
+      console.error(e);
+      next(e);
+    }
+  }
 }

@@ -120,12 +120,12 @@ export class DestinationService {
     const updatedDestination = await db.$transaction(async (tx) => {
       let newSlug = undefined;
       if (destinationData.categoryId) {
-        const checkCategory = await db.category.findUnique({ where: { id: destinationData.categoryId } });
+        const checkCategory = await tx.category.findUnique({ where: { id: destinationData.categoryId } });
         if (!checkCategory) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("category"));
       }
       if (destinationData.title) {
         newSlug = slugify(destinationData.title);
-        const checkSlug = await db.destination.findUnique({
+        const checkSlug = await tx.destination.findUnique({
           where: { slug: newSlug },
           select: { slug: true },
         });
@@ -156,6 +156,7 @@ export class DestinationService {
         return tx.destination.update({
           where: { id },
           data: {
+            slug: newSlug,
             ...destinationData,
             coverId: newCoverId,
             tags: {

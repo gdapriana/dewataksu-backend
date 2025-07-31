@@ -16,6 +16,8 @@ adminRoute.delete("/api/destinations/:id/gallery", DestinationGalleryController.
 
 // tradition
 adminRoute.post("/api/traditions", TraditionController.POST);
+adminRoute.patch("/api/traditions/:id", TraditionController.PATCH);
+adminRoute.delete("/api/traditions/:id", TraditionController.DELETE);
 
 // category
 adminRoute.post("/api/categories", CategoryController.POST);

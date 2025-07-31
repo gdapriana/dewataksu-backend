@@ -44,4 +44,11 @@ export class TraditionRelation {
       },
     },
   };
+
+  static readonly POST: Prisma.TraditionSelect = {
+    slug: true,
+  };
+  static readonly PATCH: Prisma.TraditionSelect = {
+    slug: true,
+  };
 }

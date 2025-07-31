@@ -1,5 +1,5 @@
 ### GET
-GET http://localhost:5050/api/traditions/ngaben-ceremony
+GET http://localhost:5050/api/traditions/test-destination-1
 
 ### GETS
 GET http://localhost:5050/api/traditions?
@@ -19,17 +19,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZHE2YzZiO
 }
 
 ### PATCH
-PATCH http://localhost:5050/api/destinations/cmdmr5dsq0000i0rii6s0aoug
+PATCH http://localhost:5050/api/traditions/cmdrbl07u0000ugsrps0mp4hx
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZG1pNGpkazAwMDBpMGY1dW4zZHAweTQiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzNjcwNTA0LCJleHAiOjE3NTM3NTY5MDR9.KoEgtR3cHIuiIh04zfc8Gj0ww0q-Xk_3YCmRnRtnPq8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZHE2YzZiOTAwMDBpMHJyczJ5NWQxNzkiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzOTYwODc5LCJleHAiOjE3NTQwNDcyNzl9.yzNmqLszfkKgsWO09TsjJWm44y4gxzoXfaI5kBtsjnI
 
 {
-    "cover": null
+    "cover": {
+        "url": "https://www.google.com"
+    }
 }
 
 ### DELETE
-DELETE http://localhost:5050/api/destinations/cmdmr5dsq0000i0rii6s0aoug
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZG1pNGpkazAwMDBpMGY1dW4zZHAweTQiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzNjcwNTA0LCJleHAiOjE3NTM3NTY5MDR9.KoEgtR3cHIuiIh04zfc8Gj0ww0q-Xk_3YCmRnRtnPq
+DELETE http://localhost:5050/api/traditions/cmdrcvmr10002ugiedx6aqfca
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZHE2YzZiOTAwMDBpMHJyczJ5NWQxNzkiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUzOTYwODc5LCJleHAiOjE3NTQwNDcyNzl9.yzNmqLszfkKgsWO09TsjJWm44y4gxzoXfaI5kBtsjnI
 
 ######## COMMENT
 
