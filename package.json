@@ -7,10 +7,10 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon --exec ts-node -r tsconfig-paths/register ./src/index.ts",
+    "dev": "nodemon --exec -r tsconfig-paths/register ./src/index.ts",
     "build": "tsc && tsc-alias",
     "serve": "node dist/index.js",
-    "start": "node -r tsconfig-paths/register dist/index.js",
+    "start": "nodemon -r tsconfig-paths/register dist/index.ts",
     "postinstall": "prisma generate"
   },
   "devDependencies": {
