@@ -1,8 +1,6 @@
 {
   "exclude": ["./coverage", "./dist", "__tests__", "jest.config.js"],
-  "include": [
-    "./src/**/*"
-  ],
+  "include": ["./src/**/*"],
   "ts-node": {
     "transpileOnly": true,
     "files": true
@@ -20,5 +18,9 @@
     "strict": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
+    "paths": {
+      "@controllers/*": ["src/controllers/*"],
+      "@services/*": ["src/services/*"]
+    }
   }
 }
