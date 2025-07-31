@@ -1,0 +1,768 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Category": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "destinations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Destination"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "Tag": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "destinations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Destination"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "username": {
+          "type": "string"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "password": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "bio": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "refreshToken": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "default": "USER",
+          "enum": [
+            "USER",
+            "ADMIN"
+          ]
+        },
+        "profileImage": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Image"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "stories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Story"
+          }
+        },
+        "likes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Like"
+          }
+        },
+        "bookmarks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Bookmark"
+          }
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          }
+        },
+        "activityLogs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ActivityLog"
+          }
+        }
+      }
+    },
+    "Destination": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "content": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "mapUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "latitude": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "longitude": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "price": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": 0
+        },
+        "cover": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Image"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "category": {
+          "$ref": "#/definitions/Category"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Tag"
+          }
+        },
+        "galleries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Gallery"
+          }
+        },
+        "likes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Like"
+          }
+        },
+        "bookmarks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Bookmark"
+          }
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          }
+        }
+      }
+    },
+    "Tradition": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "cover": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Image"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "likes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Like"
+          }
+        },
+        "galleries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Gallery"
+          }
+        },
+        "bookmarks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Bookmark"
+          }
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          }
+        }
+      }
+    },
+    "Story": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "isPublished": {
+          "type": "boolean",
+          "default": true
+        },
+        "cover": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Image"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "author": {
+          "$ref": "#/definitions/User"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "likes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Like"
+          }
+        },
+        "bookmarks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Bookmark"
+          }
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          }
+        }
+      }
+    },
+    "Like": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "destination": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Destination"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tradition": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Tradition"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "story": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Story"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "Bookmark": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "destination": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Destination"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "tradition": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Tradition"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "story": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Story"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "Comment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "author": {
+          "$ref": "#/definitions/User"
+        },
+        "destination": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Destination"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tradition": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Tradition"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "story": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Story"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Comment"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "replies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ActivityLog": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "from": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": "USER",
+          "enum": [
+            "USER",
+            "ADMIN"
+          ]
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "CREATE_STORY",
+            "UPDATE_STORY",
+            "DELETE_STORY",
+            "CREATE_DESTINATION",
+            "UPDATE_DESTINATION",
+            "DELETE_DESTINATION",
+            "LIKE_DESTINATION",
+            "LIKE_TRADITION",
+            "LIKE_STORY",
+            "UNLIKE_DESTINATION",
+            "UNLIKE_TRADITION",
+            "UNLIKE_STORY",
+            "BOOKMARK_DESTINATION",
+            "UNBOOKMARK_DESTINATION",
+            "BOOKMARK_TRADITION",
+            "UNBOOKMARK_TRADITION",
+            "BOOKMARK_STORY",
+            "UNBOOKMARK_STORY",
+            "CREATE_COMMENT",
+            "REPLY_COMMENT",
+            "DELETE_COMMENT",
+            "UPDATE_PROFILE",
+            "CREATE_CATEGORY",
+            "UPDATE_CATEGORY",
+            "DELETE_CATEGORY",
+            "CREATE_TAG",
+            "UPDATE_TAG",
+            "ADD_GALLERY",
+            "REMOVE_GALLERY"
+          ]
+        },
+        "details": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "targetId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "Gallery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "tradition": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Tradition"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "destination": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Destination"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "image": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Image"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "Image": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "publicId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "story": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Story"
+          }
+        },
+        "tradition": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Tradition"
+          }
+        },
+        "destination": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Destination"
+          }
+        },
+        "user": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          }
+        },
+        "gallery": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Gallery"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "category": {
+      "$ref": "#/definitions/Category"
+    },
+    "tag": {
+      "$ref": "#/definitions/Tag"
+    },
+    "user": {
+      "$ref": "#/definitions/User"
+    },
+    "destination": {
+      "$ref": "#/definitions/Destination"
+    },
+    "tradition": {
+      "$ref": "#/definitions/Tradition"
+    },
+    "story": {
+      "$ref": "#/definitions/Story"
+    },
+    "like": {
+      "$ref": "#/definitions/Like"
+    },
+    "bookmark": {
+      "$ref": "#/definitions/Bookmark"
+    },
+    "comment": {
+      "$ref": "#/definitions/Comment"
+    },
+    "activityLog": {
+      "$ref": "#/definitions/ActivityLog"
+    },
+    "gallery": {
+      "$ref": "#/definitions/Gallery"
+    },
+    "image": {
+      "$ref": "#/definitions/Image"
+    }
+  }
+}

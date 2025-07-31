@@ -253,3 +253,7 @@ model Image {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+generator jsonSchema {
+  provider = "prisma-json-schema-generator"
+}
