@@ -3,7 +3,6 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
-// Dummy data for destinations
 const dummyDestinations = [
   { title: "Kuta Beach", address: "Kuta, Badung Regency, Bali", lat: -8.7184, lon: 115.1684, price: 0 },
   { title: "Mount Bromo", address: "Bromo Tengger Semeru National Park, East Java", lat: -7.9425, lon: 112.953, price: 220000 },
@@ -27,7 +26,6 @@ const dummyDestinations = [
   { title: "Jodipan Colorful Village", address: "Jodipan, Malang City, East Java", lat: -7.9866, lon: 112.633, price: 5000 },
 ];
 
-// --- DATA TRADISI BARU DITAMBAHKAN DI SINI ---
 const dummyTraditions = [
   { title: "Ngaben Ceremony", content: "A traditional cremation ceremony in Bali, considered a sacred duty to release the soul of the deceased to the afterlife." },
   { title: "Galungan and Kuningan", content: "A major Balinese holiday celebrating the victory of dharma (good) over adharma (evil), where ancestors are believed to visit the earth." },
@@ -41,28 +39,61 @@ const dummyTraditions = [
   { title: "Omed-omedan", content: "Known as the 'kissing festival,' a unique ceremony held the day after Nyepi in Sesetan, Denpasar, to strengthen community bonds." },
 ];
 
+const dummyStories = [
+  {
+    title: "My Spiritual Journey in the Heart of Ubud",
+    content: "Discovering the serene rice paddies and the tranquil yoga studios of Ubud was a life-changing experience. This is my story of finding peace and 'taksu' in Bali's cultural capital.",
+  },
+  {
+    title: "A Culinary Tour of Seminyak's Best Warungs",
+    content: "From babi guling to sate lilit, I ate my way through Seminyak. Here are the must-visit local eateries that will give you a true taste of Balinese cuisine without breaking the bank.",
+  },
+  {
+    title: "Surfing the Legendary Waves of Uluwatu",
+    content: "The cliffs, the temple, the sunset, and of course, the waves. Surfing in Uluwatu is not just a sport, it's a spiritual experience. A guide for beginners and pros alike.",
+  },
+  {
+    title: "Chasing Waterfalls in Northern Bali",
+    content: "Forget the crowded south for a day and head north. I'll share my itinerary for visiting the most breathtaking waterfalls, including Sekumpul and Gitgit.",
+  },
+  {
+    title: "Nusa Penida in 3 Days: An Adventurer's Itinerary",
+    content: "Kelingking Beach, Angel's Billabong, Broken Beach... Nusa Penida is an island of rugged beauty and incredible views. Here is how to conquer it in just three days.",
+  },
+];
+
 async function main() {
   console.log("🌱 Start seeding...");
   console.log("🗑️ Deleting existing data...");
-  await prisma.user.deleteMany();
-  await prisma.destination.deleteMany();
-  await prisma.tag.deleteMany();
-  await prisma.category.deleteMany();
   await prisma.activityLog.deleteMany();
   await prisma.bookmark.deleteMany();
   await prisma.like.deleteMany();
-  await prisma.tradition.deleteMany();
   await prisma.comment.deleteMany();
   await prisma.gallery.deleteMany();
+  await prisma.story.deleteMany();
+  await prisma.tradition.deleteMany();
+  await prisma.destination.deleteMany();
+  await prisma.tag.deleteMany();
+  await prisma.category.deleteMany();
   await prisma.image.deleteMany();
+  await prisma.user.deleteMany();
 
-  console.log("seeding users...");
+  console.log("👤 Seeding users...");
   await prisma.user.createMany({
     data: [
       { username: "admin", password: await bcrypt.hash("11111111", 10), role: "ADMIN" },
-      { username: "user", password: await bcrypt.hash("11111111", 10), role: "USER" },
+      { username: "user_1", password: await bcrypt.hash("11111111", 10), role: "USER" },
+      { username: "user_2", password: await bcrypt.hash("11111111", 10), role: "USER" },
     ],
   });
+
+  const adminUser = await prisma.user.findUnique({ where: { username: "admin" } });
+  const regularUser1 = await prisma.user.findUnique({ where: { username: "user_1" } });
+  const regularUser2 = await prisma.user.findUnique({ where: { username: "user_2" } });
+
+  if (!adminUser || !regularUser1 || !regularUser2) {
+    throw new Error("Default users could not be created or found.");
+  }
 
   console.log("📚 Seeding categories...");
   const createdCategories = await prisma.category.createManyAndReturn({
@@ -125,6 +156,26 @@ async function main() {
         title: tradition.title,
         slug: slug,
         content: tradition.content,
+      },
+    });
+  }
+
+  console.log("📝 Seeding stories...");
+  const userIds = [adminUser.id, regularUser1.id, regularUser2.id];
+  for (const story of dummyStories) {
+    const slug = story.title
+      .toLowerCase()
+      .replace(/ /g, "-")
+      .replace(/[^\w-]+/g, "");
+    const randomAuthorId = userIds[Math.floor(Math.random() * userIds.length)];
+
+    await prisma.story.create({
+      data: {
+        title: story.title,
+        slug: slug,
+        content: story.content,
+        isPublished: true,
+        authorId: randomAuthorId,
       },
     });
   }

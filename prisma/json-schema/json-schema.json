@@ -336,12 +336,6 @@
         "content": {
           "type": "string"
         },
-        "imageUrl": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
         "isPublished": {
           "type": "boolean",
           "default": true
@@ -565,34 +559,39 @@
         "action": {
           "type": "string",
           "enum": [
+            "UPDATE_PROFILE",
             "CREATE_STORY",
             "UPDATE_STORY",
             "DELETE_STORY",
+            "LIKE_STORY",
+            "UNLIKE_STORY",
+            "BOOKMARK_STORY",
+            "UNBOOKMARK_STORY",
             "CREATE_DESTINATION",
             "UPDATE_DESTINATION",
             "DELETE_DESTINATION",
             "LIKE_DESTINATION",
-            "LIKE_TRADITION",
-            "LIKE_STORY",
             "UNLIKE_DESTINATION",
-            "UNLIKE_TRADITION",
-            "UNLIKE_STORY",
             "BOOKMARK_DESTINATION",
             "UNBOOKMARK_DESTINATION",
+            "CREATE_TRADITION",
+            "UPDATE_TRADITION",
+            "DELETE_TRADITION",
+            "LIKE_TRADITION",
+            "UNLIKE_TRADITION",
             "BOOKMARK_TRADITION",
             "UNBOOKMARK_TRADITION",
-            "BOOKMARK_STORY",
-            "UNBOOKMARK_STORY",
             "CREATE_COMMENT",
             "REPLY_COMMENT",
             "DELETE_COMMENT",
-            "UPDATE_PROFILE",
             "CREATE_CATEGORY",
             "UPDATE_CATEGORY",
             "DELETE_CATEGORY",
             "CREATE_TAG",
             "UPDATE_TAG",
+            "DELETE_TAG",
             "ADD_GALLERY",
+            "UPDATE_GALLERY",
             "REMOVE_GALLERY"
           ]
         },
