@@ -3,6 +3,7 @@ import verifyMiddleware from "../middleware/verify.middleware";
 import UserController from "../controllers/user.controller";
 import { DestinationBookmarkController, DestinationCommentController, DestinationLikeController } from "../controllers/destination.controller";
 import { TraditionBookmarkController, TraditionCommentController, TraditionLikeController } from "../controllers/tradition.controller";
+import { StoryBookmarkController, StoryCommentController, StoryController, StoryLikeController } from "../controllers/story.controller";
 
 const userRoute = express.Router();
 userRoute.use(verifyMiddleware);
@@ -23,5 +24,16 @@ userRoute.post("/api/traditions/:id/bookmark", TraditionBookmarkController.POST)
 userRoute.delete("/api/traditions/:id/bookmark", TraditionBookmarkController.DELETE);
 userRoute.post("/api/traditions/:id/like", TraditionLikeController.POST);
 userRoute.delete("/api/traditions/:id/like", TraditionLikeController.DELETE);
+
+// STORY
+userRoute.post("/api/stories", StoryController.POST);
+userRoute.patch("/api/stories/:id", StoryController.PATCH);
+userRoute.delete("/api/stories/:id", StoryController.DELETE);
+userRoute.post("/api/stories/:id/comment", StoryCommentController.POST);
+userRoute.delete("/api/stories/:destinationId/comments/:commentId", StoryCommentController.DELETE);
+userRoute.post("/api/stories/:id/bookmark", StoryBookmarkController.POST);
+userRoute.delete("/api/stories/:id/bookmark", StoryBookmarkController.DELETE);
+userRoute.post("/api/stories/:id/like", StoryLikeController.POST);
+userRoute.delete("/api/stories/:id/like", StoryLikeController.DELETE);
 
 export default userRoute;
