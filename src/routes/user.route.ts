@@ -1,6 +1,6 @@
 import express from "express";
 import verifyMiddleware from "../middleware/verify.middleware";
-import UserController from "../controllers/user.controller";
+import { UserController } from "../controllers/user.controller";
 import { DestinationBookmarkController, DestinationCommentController, DestinationLikeController } from "../controllers/destination.controller";
 import { TraditionBookmarkController, TraditionCommentController, TraditionLikeController } from "../controllers/tradition.controller";
 import { StoryBookmarkController, StoryCommentController, StoryController, StoryLikeController } from "../controllers/story.controller";

@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { LoginRequest, RegisterRequest, UserRequest } from "../utils/types";
-import UserService from "../services/user.service";
+import { UserRequest } from "../utils/types";
+import { AdminService, UserService } from "../services/user.service";
 import z from "zod";
 import UserValidation from "../validation/user.validation";
 
-class UserController {
+export class UserController {
   static async REGISTER(req: Request, res: Response, next: NextFunction) {
     try {
       const body: z.infer<typeof UserValidation.REGISTER> = req.body;
@@ -62,4 +62,34 @@ class UserController {
   }
 }
 
-export default UserController;
+export class AdminController {
+  static async GET(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { username } = req.params;
+      const result = await AdminService.GET(username);
+      res.status(200).json({ result });
+    } catch (e) {
+      console.error(e);
+      next(e);
+    }
+  }
+  static async GETS(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await AdminService.GETS();
+      res.status(200).json({ result });
+    } catch (e) {
+      console.error(e);
+      next(e);
+    }
+  }
+  static async DELETE(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { username } = req.params;
+      const result = await AdminService.DELETE(username, req.user!);
+      res.status(200).json({ result });
+    } catch (e) {
+      console.error(e);
+      next(e);
+    }
+  }
+}

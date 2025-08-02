@@ -3,9 +3,15 @@ import adminMiddleware from "../middleware/admin.middleware";
 import { DestinationController, DestinationGalleryController } from "../controllers/destination.controller";
 import { CategoryController } from "../controllers/category.controller";
 import { TraditionController, TraditionGalleryController } from "../controllers/tradition.controller";
+import { AdminController } from "../controllers/user.controller";
 
 const adminRoute = express.Router();
 adminRoute.use(adminMiddleware);
+
+// user
+adminRoute.get("/api/users/:username", AdminController.GET);
+adminRoute.get("/api/users", AdminController.GETS);
+adminRoute.delete("/api/users/:username", AdminController.DELETE);
 
 // destination
 adminRoute.post("/api/destinations", DestinationController.POST);

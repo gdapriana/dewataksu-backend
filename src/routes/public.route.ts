@@ -1,5 +1,5 @@
 import express from "express";
-import UserController from "../controllers/user.controller";
+import { UserController } from "../controllers/user.controller";
 import { DestinationController } from "../controllers/destination.controller";
 import { CategoryController } from "../controllers/category.controller";
 import { TraditionController } from "../controllers/tradition.controller";
