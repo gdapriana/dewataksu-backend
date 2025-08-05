@@ -21,7 +21,7 @@ export class UserController {
       const { accessToken, refreshToken } = await UserService.LOGIN(body);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         maxAge: 24 * 60 * 60 * 1000, // 1 hari
       });
       res.status(200).json({ data: { accessToken } });

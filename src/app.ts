@@ -9,8 +9,8 @@ import adminRoute from "./routes/admin.route";
 import cloudinaryRoute from "./routes/cloudinary.route";
 
 const app: Application = express();
-app.use(express.json());
 app.use(cookieParser());
+app.use(express.json());
 app.use(
   cors({
     credentials: true,
