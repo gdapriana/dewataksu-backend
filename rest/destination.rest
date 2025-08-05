@@ -2,7 +2,7 @@
 GET http://localhost:5050/api/destinations/jodipan-colorful-village
 
 ### GETS
-GET http://localhost:5050/api/destinations
+GET http://localhost:5050/api/destinations/ss
 
 
 ### POST
