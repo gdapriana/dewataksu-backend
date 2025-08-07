@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(
   cors({
     credentials: true,
-    origin: process.env.FRONTEND_PROD_ADMIN_URL!,
+    origin: "https://dewataksuadmin.vercel.app",
   }),
 );
 
