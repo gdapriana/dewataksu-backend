@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(
   cors({
     credentials: true,
-    origin: "https://dewataksuadmin.vercel.app",
+    origin: process.env.NODE_ENV === "production" ? "https://dewataksuadmin.vercel.app" : "http://localhost:3000",
   }),
 );
 
