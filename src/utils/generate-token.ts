@@ -3,7 +3,7 @@ import { UserPayload } from "./types";
 import { ErrorResponseMessage, ResponseError } from "./error-response";
 
 export const generateAccessToken = (user: UserPayload) => {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: "1d" });
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: "15m" });
 };
 export const generateRefreshToken = (user: UserPayload) => {
   return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET!, { expiresIn: "1d" });

@@ -21,7 +21,7 @@ DELETE http://localhost:5050/api/logout
 
 ### ME
 GET http://localhost:5050/api/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZGoycHgzYzAwMDBpMG4xaDNsbWFxNXoiLCJ1c2VybmFtZSI6ImdlZGVhcHJpYW5hIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NTM0NjQ3MzYsImV4cCI6MTc1MzQ2NDc5Nn0.5udVFk7O5FP9j65KW5rfSLJzTGYSEnnQOAFtMBuejZQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZHN3MXpxbjAwMDBpMGF5d3V2djM0M2MiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzU0NzM2NjIzLCJleHAiOjE3NTQ3MzY2NTN9.ukkvKKxD8auuTqYos-7-x4cwLXPHUqPJoTb0T6aRRw4
 Content-Type: application/json
 
 ### REFRESH TOKEN
